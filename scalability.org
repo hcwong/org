@@ -1,0 +1,41 @@
+#+TITLE: Scalability
+
+* CS75 Lecture 9 Scalability:Interviews:Scalability:
+https://www.youtube.com/watch?v=-W9F__D3oY4h
+
+Scalability comes together with concepts like redundancy and security.
+
+** Horizontal scaling
+To enable horizontal scaling, we use stuff like load balancers to balance the end servers
+For a simple system, we can just use a fancy DNS to do round robin
+But round robin is not a good proxy for load, because some users are power users and also some of the time there's just bad luck when a lot of traffic is allocated to the same server (Stuff like DNS Cache)
+
+Horizontal Scaling also comes with certain issues when it comes to stored data like sessions. Usually, we solve this by abstracting all this shared data into a separate service or into something like a shared hard drive.
+
+Load balancers also can be replicated (active-active/active-passive) to prevent a single point of failure.
+
+Additional benefit of load balancers is also good because we can give our end servers *private* IP addresses.
+
+Sticky sessions are when the same session is always directed to the same server machine. We can leave the load balancer to decide this. Storing IP address is not an optimal outcome because IP Addreses usually change.
+
+** Hard drives
+For stuff like hard drives, we have things like RAID which offer different tradeoffs between write speed or backups/redudancy.
+
+** Storage
+SQL Stuff
+- Provides query caching to optimize common query in MYSQL
+- MemCached stores the query in RAM which makes it even faster to get the cached result. Memcached runs as a separate server either on the same machine on a different machine
+
+Replication
+- To replicate, we can just copy the query everytime it is sent to the master to the rest of the slaves.
+- Slaves can also be used to load balance read requests, especially if it is more common than write requests. (NOTE: Load balancers can be placed in front of DBs also)
+- There is a also a master-master replication to prevent a single point of failure when master fails to avoid the time taken to promote a slave to master.
+ 
+** Partitioning
+Balancing load based on some other information (ie stuff like last name)
+
+** Availability
+Servers checking for each other's health status to take on additional burden if servers fail
+
+** Security
+Maybe just allow 22, 443, 80 into the web server.

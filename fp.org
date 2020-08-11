@@ -1,0 +1,53 @@
+#+TITLE: Functional Programming Related stuff
+
+* Lazy evaluation in JavaScript :LazyEvaluation:FP:
+https://www.merrickchristensen.com/articles/lazy-evaluation-in-javascript/
+
+** Thunks(Traditonal Way)
+The normal way we perhaps might do this is in JS is perhaps with the usage of thunks
+
+#+NAME: Normal Thunks
+#+BEGIN_SRC js
+const payCostLaterThunk = () => getExpensiveValue();
+#+END_SRC
+
+In this example, what we do is to replace an expensive value with a thunk. But this requires us to
+update all usages of the payCostLaterThunk variable to make it a function call, which can be a bit troublesome
+
+** Self overwriting Lazy getters (The real learning point)
+
+This makes use of the JS object getter function
+
+#+NAME: Self overwriting
+#+BEGIN_SRC js
+const code = (props) => {
+  if (isExpensiveUseful(props.cheap)) {
+    // Hey it's being access so it is time
+    // to pay the fiddler!
+    return doSomethingWithExpensiveArg(props.expensive);
+  }
+
+  return expensiveIsntEvenUsed;
+};
+
+const cheap = {
+  /*..*/
+};
+
+code({
+  cheap,
+  // This code will only be run when someone
+  // accesses `expensive`.
+  get expensive() {
+    // Don't forget to overwrite the value so you
+    // only pay the cost once!
+    delete this.expensive;
+    // `this` is the object that contains `cheap` and our `expensive` getter.
+    // Upon first retrieval we overwrite the getter with its value.
+    return (this.expensive = getExpensiveValue());
+  },
+});
+#+END_SRC
+
+As seen, this method also does some form of implicit memoization, we could also make the memoization explicit,
+with stuff like Lodash's once function or just via plain closures or properties

@@ -1,0 +1,11 @@
+#+TITLE: Using Org Mode Effectively
+[[https://www.youtube.com/watch?v=SzA2YODtgK4][Source Talk]]
+
+* Useful Keybindings
+C-c l to store links - I already have this
+
+** Tables
+M up down left right to switch the cells. Can also insert Elisp code into the cells
+
+** Export
+Control C control E to export org mode files

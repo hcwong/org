@@ -1,0 +1,50 @@
+#+TITLE: CS2102
+
+* Lecture 1 :CS2102:
+** Basic terminology
+We typically use tables to represent relations as all relations can be expressed as tables. Not vice versa
+
+The data is represented via attribute values we are interested in. These values cannot be decomposed (atomic).
+
+- A *value* is the each "cell" in the database.
+- An *attribute* is the header of the column. If you view the column as a set, then it is the name of the set
+- A *schema* is an ordered row of all the attributes of the table.
+- A *domain* is the unique set of all values of an attribute w/o the attribute name itself.
+- *Arity* is the number of attributes/columns in the table.
+- *Cardinality* is the number of rows, though this is often less important.
+- *Relational Database Schema* is the schemas of tables that make up a database. Data can be omitted. Often contains *constraints*.
+
+** Logical Groundings
+If we see each table column as a set, then it is easy to see tables as a subset of the Cartesian product of all the table columns. Subset because of course there are some cartesian product values that we do not use.
+
+** Anatomy of Database
+For there to be valid data, there needs to be a relation instance that satisfy certain constraints. Constraints can come in the form of types like /VARCHAR, INT/ etc, or stuff like key constraints
+
+*** Keys
+**** Superkey
+Superkeys are a combination of attributes that can be used to uniquely identify data (a row of values).
+
+For example, this may take the form of /(Height, Name)/ or /(ID)/
+**** Key
+Key is a minimal superkey, in other words, a superkey set that does not contain a smaller superkey. Note that this is not the minimum superkey
+
+Using the example above /(Height, Name)/ and /(ID)/ are both keys but ID is the minimum superkey because it has the least attributes
+**** Primary Key
+Primary key is just the key that the user uses to uniquely identify each row/data in the table.
+**** Foreign Key
+Also known as existential dependency
+This is applied to an attribute, and all values of this attribute now depend on the existence of another value on a different row on the same table or different table
+
+Acts as a link between the 2 tables by referencing primary key of another table.
+Foreign keys used to accept null values, but deprecated as of later SQL versions.
+
+** Three Valued Logic of SQL
+SQL has 3 forms of logic: True, False and Unknown (NULL)
+
+NULL often lends itself to some weird logic. For example, the relationship /NULL && true/ evaluates to NULL, because the result is not known
+(Could be true or false depending on actual value of /NULL/)
+
+There may be different "types" of NULL as well: For example, /True && NULL/ evaluates to /NULL/, but so does /1 + NULL/
+
+NULL just means could be anything. As such, it is not possible to use an equality sign with NULL, because how can you possibly check the equality of two values that mean nothing.
+To do this, we use the /IS NOT DISTINCT/ operator. /NULL/ and /NULL/ are not distinct.

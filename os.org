@@ -1,0 +1,15 @@
+#+TITLE: OS
+
+* Operating Systems :CS140:OS:
+** Bootloading
+Recap: Broadly speaking, the OS is just an abstraction over the hardware, mainly recap from CS2106
+
+Instructions for booting are typically found in the *BIOS* chip. BIOS chip points towards the bootloader. Bootloader pokes around at I/O ports in a process called *autoprobing*. They also help to start the kernel.
+For historical reasons the original program was kept as small as possible.
+
+The above steps are usually called the first stage. After this, the kernel starts an init process, my guess is that this is the process with pid 0.
+This init process does things like check whether the disks are okay and to spawn daemons and prepares for users.
+
+Of course, there can be more than two stages in a bootloader. This is known as chain loading.
+
+CMU has quite a detailed guide on how to write a bootloader [here](https://www.cs.cmu.edu/~410-s07/p4/p4-boot.pdf)

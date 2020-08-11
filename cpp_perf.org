@@ -1,0 +1,70 @@
+#+TITLE: C++ Performance
+
+This mainly comes from Effective Modern C++ By Scott Meyers
+
+* Move Semantics :cpp:MoveSemantics:
+lvalues are not eligible for move operations whereas rvalues are. A useful heuristic to check if expression is lvalue
+is to see if you can take its address. NB: lvalue/rvalue is independent of the type of the expression
+
+rvalues are temporary object that are destroyed at the next semicolon.
+
+** Move Semantics Details
+From [[https://stackoverflow.com/questions/3106110/what-is-move-semantics][this SO Article]]
+
+#+Name: String class with pointer to heap allocated memory
+#+BEGIN_SRC cpp
+#include <cstring>
+#include <algorithm>
+
+class string
+{
+    char* data;
+
+public:
+
+    string(const char* p)
+    {
+        size_t size = std::strlen(p) + 1;
+        data = new char[size];
+        std::memcpy(data, p, size);
+    }
+
+    // Destructor
+     ~string()
+    {
+        delete[] data;
+    }
+
+    // Copy constructor
+    string(const string& that)
+    {
+        size_t size = std::strlen(that.data) + 1;
+        data = new char[size];
+        std::memcpy(data, that.data, size);
+    }
+}
+#+END_SRC
+
+
+#+BEGIN_SRC cpp
+// Using the copy constructor
+string a(x);                                    // Line 1
+string b(x + y);                                // Line 2
+string c(some_function_returning_a_string());   // Line 3
+#+END_SRC
+
+In Line 1, ~x~ is a lvalue, because we can take its address and can be inspected at a later time. But this not apply to lines 2 and 3.
+
+C++11 introduces *rvalue reference* via function overloading by creating a constructor with a valid rvalue reference param. And inside that constructor
+we can now do anything we want with the reference so long as we leave it in a valid state
+#+BEGIN_SRC cpp
+ string(string&& that)   // string&& is an rvalue reference to a string
+    {
+        data = that.data;
+        that.data = nullptr;
+    }
+#+END_SRC
+In the example above, we don't copy the heap data like the copy constructor and only steal the reference.
+
+* Copy and Swap Idiom :cpp:
+From [[https://stackoverflow.com/questions/3279543/what-is-the-copy-and-swap-idiom][this SO post]]

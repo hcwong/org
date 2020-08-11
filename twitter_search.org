@@ -1,0 +1,35 @@
+#+TITLE: Twitter Search
+
+* How Twitter Handles Info Retrieval :InfoRetrieval:CS3245:
+[Link](https://blog.twitter.com/engineering/en_us/topics/infrastructure/2020/reducing-search-indexing-latency-to-one-second.html)
+
+Abstract: How Twitter got their search latency time down to 1 second
+
+Used to be 15 seconds for indexing latency, this was due to two factors
+1. Some fields like URL not instantly available
+2. Ingestion buffer for tweets
+
+Core indexing technology is called *Lucene*.
+In Lucene, inverted index is subdivided into chunks called segments and the Document IDs are Java integers. The first document in every segment is assinged the ID of 0.
+When searching through a segment, start from lowestId (Just like in CS3245). DocumentID is assigned by the timestamp (32 bit-integer) when the tweet was created.
+
+**The old posting list**
+The posting list follows an unrolled prepended LL to maximise cache performance (Unrolled linked list is a node which has multiple entries, as opposed to one)
+LL supports a single writer and many searchers as writes are strictly prepend only and constant time O(1)
+
+**The new posting list**
+The problem with the old posting list is that it assumes that things come in order, hence the prepended
+However, once ingestion buffer was removed, this may no longer be the case and we may need to add to the middle of the list in faster than O(n) time
+
+Runs on skip lists, there are multiple skip levels (skip list towers), each one with 20% less values than the previous skip list.
+Optimizations include:
+1. Add elements to the end of an allocation pool
+2. When searching for an element, save the locations as a search finger, increases lookup time from O(log n) to O(log d)
+3. Use array primitives to store data to avoid pointers
+4. Allocate one pointer for every level of the skip list
+
+However, skip lists lose the cache line optimization
+
+The ingestion buffer was removed as instead of waiting for the fields to be filled, they are indexed first and then updated later, because most search cases only rely on fields that are immediately available.
+
+Conclusion: Linked List -> Skip Towers
