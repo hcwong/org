@@ -38,6 +38,10 @@ This is applied to an attribute, and all values of this attribute now depend on 
 Acts as a link between the 2 tables by referencing primary key of another table.
 Foreign keys used to accept null values, but deprecated as of later SQL versions.
 
+Insertion of Foreign Keys looks like that - If anyone of the value is /NULL/, insert. Else if it exist, also can insert into the referencing table. Must also reference primary keys.
+
+If its an individual reference, then we must do the comparison individually. See [[https://coursemology.org/courses/1904/assessments/39097][Lecture 01C: Foreign Key]] for more details
+
 ** Three Valued Logic of SQL
 SQL has 3 forms of logic: True, False and Unknown (NULL)
 
