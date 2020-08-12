@@ -1,0 +1,48 @@
+#+TITLE: CS2104
+
+* Lecture 1 :CS2104:
+** Benefits of PL features
+- Readability
+- Extensibility
+- Modifiability
+- Reusability
+- Correctness
+- Easy debugging
+ 
+** Haskell features
+- Strongly typed with polymorphism
+- Higher order function
+- Pure and lazy function
+- Algebraic
+- Exceptions
+- Type classes, monads, arrows
+
+** OCaml vs Haskell vs Scala
+#+BEGIN_SRC haskell
+putStrLn "Helloworld" -- String = IO() String to IO Monad
+#+END_SRC
+
+#+BEGIN_SRC ocaml
+print_endline "HelloWorld" // String -> () the printing is a side effect
+#+END_SRC
+
+OCaml supports imperative programming
+
+In Scala, you can declare functions as objects - including static ones
+
+** Lambda Calculus
+Lambda calculus is the simplest language out there. It is turing complete and supports features like boolean, loops and data structures.
+
+*** Terms of Lambda Calculus
+There are 3 types of terms in lambda calculus
+ 1. Variable, eg \(\ x \)
+ 2. Also used for abstraction: \(\Lambda . x\), think of this as function
+ 3. Applying a function to an argument (Application), \( \mu \: \nu \)
+
+** Functional Programming
+Usually, a pure functional language has no update or side effects to allow for easy debugging and abstraction
+
+This paradigm is known as *declarative programming*, which focuses on what is to be done as opposed to how it is done.
+Functions and relations are the focus.
+
+There is also usually no state. Simple data transforms are used and especially for Haskell, the data structures are immutable.
