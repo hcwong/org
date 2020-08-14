@@ -1,0 +1,28 @@
+#+TITLE: CS2107
+#+AUTHOR: Joshua Wong
+
+* Lecture 1
+
+** Definitions
+1. *Threat* is the set of circumstances that have an ability to harm
+2. *Vulnerability* is the weakness is the system
+
+This is commonly generalized as the *asset-threat-vulnerability-control model*.
+
+1. *Confidentiality* is to ensure that info is only viewed by authorized parties. Also known as privacy
+2. *Integrity* is to ensure that asset is only modified by authorized party
+3. *Availability* is to ensure that asset can only be used by authorized party
+
+** Encryption
+Cryptology vs Cryptography - Study of codes vs study of techniques in securing comms in the presence of adversaries.
+
+Encrpytion is one of the primitives in cryptography.
+
+#+CAPTION: Encryption process
+#+ATTR_ORG: :width 600
+[[file:./images/cs2107_l1_1.png]]
+
+*** Requirements for encryption
+1. \(D_k(E_k(x))\) where \(k\) is the key. This is known as correctness.
+2. Must be difficult to get useful information from the ciphertext.
+3. Efficent decryption and encryption. (polynomial time)

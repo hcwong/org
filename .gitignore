@@ -6,3 +6,4 @@ tmp/
 journal/
 todo.org
 thoughts.org
+.auctex-auto/

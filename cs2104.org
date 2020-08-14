@@ -1,4 +1,5 @@
 #+TITLE: CS2104
+#+AUTHOR: Joshua Wong
 
 * Lecture 1 :CS2104:
 ** Benefits of PL features
