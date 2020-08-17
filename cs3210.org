@@ -1,0 +1,65 @@
+#+TITLE: CS3210
+#+AUTHOR: Joshua Wong
+
+* Lecture 1
+
+** Program Parallelization
+
+Consists of three steps:
+1. Decomposition of program into steps
+2. Scheduling of assignment of tasks to processes
+3. Map processes to cores
+
+
+** Von Neumann Architecture
+Consists of processor, memory, control scheme (fetch instruction and data)
+
+However, there now exists the problem of /memory wall/, which is the speed disparity between the faster processor and the slower memory (time taken to fetch and interact with it)
+
+*** Ways to improve performance
+1. Higher clock frequency
+2. Pipeline, doing things smater
+3. Replication using multicore and cluster
+
+** Parallel Computing
+
+Defined as the *simulataenous use* of *multiple* processing units to solve a problem quickly.
+
+Processing units start from core->processor->nodes->cluster. Note that processor and core may be used interchangably.
+
+We usually try to find concurrent calculations and then run these on the different processing units.
+
+*** Benefits
+1. Overcome limits of serial computing
+2. Save wall clock time
+3. Solve larger problems
+4. Improve performance
+5. Use non-local or cheaper resources
+6. Overcome memory constraint.
+
+*** Evaluation
+We evaluate based on execution time and throughput.
+
+Parallel execution time is measured by computation time + overhead
+
+** Computatational Model Attributes
+
+1. Operation (Primitive Unit of computation)
+2. Data
+3. Control (scheduling the units of computation)
+4. Communication (Shared memory vs distributed memory, ie thread vs processes)
+5. Synchronization
+
+** Challenges
+
+The first is the granularity of the tasks (Amdahl's law), there are many ways to decompose the program.
+
+Tasks may also depend on each other resulting in *data* or *control* dependencies. These impose execution order of parallel tasks.
+
+*** Others
+1. Compilers may either not optimize for parallel programming or not customize the parallelism for the hardware. This also applies to the runtime auto-tuners.
+2. Locality
+3. Load balance
+4. Coordination
+5. Debugging
+6. Performance Modelling/Monitoring
