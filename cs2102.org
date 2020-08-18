@@ -52,3 +52,60 @@ There may be different "types" of NULL as well: For example, /True && NULL/ eval
 
 NULL just means could be anything. As such, it is not possible to use an equality sign with NULL, because how can you possibly check the equality of two values that mean nothing.
 To do this, we use the /IS NOT DISTINCT/ operator. /NULL/ and /NULL/ are not distinct.
+
+* Lecture 2
+** Relational Calculus vs Relational Algebra
+Relational Calculus is more declarative, as compared to relational algebra which is more imperative.
+
+** Key concepts
+
+Universal Relation/Table. The relations in the DB can be seen as one giant table and relation. This will come in handy later for stuff like cartesian products.
+
+** Unary Operators
+
+*** \(\sigma\) - Selector
+This just selects rows from the table based on a given criteria. It selects whole rows, ie to say does not remove column etc
+
+*** \(\pi\) - Projection
+Projection selects columns from the table. The result is a set, so if there are some results that are duplicated, it will be removed by the operation
+
+*** Rename
+Rename just renames the columns/attribute names, it renames all the attributes at once.
+
+** Binary Operators
+1. & Intersection
+2. | Union
+3. - Difference
+4. x Cartesian product (Pick one form LHS and match with each from RHS)
+
+Stuff like cartesian products come in handy when we have to do selection from multiple tables.
+
+*TIP*: Cartesian products can usually be made smaller and more performant by doing selection before cartesian product.
+
+*** Union compatability
+The above operations require union compatability to work. There are two conditions
+1. Same arity (number of cols)
+2. Same domain (type) for each attribute
+
+** Closures
+  Given a set of operators \(O\) and a set \(S\), \(S\) is a closure iff for every operator in \(O\), the input to the operator and the output are in \(S\).
+
+  For the binary operators given above and the relations, the relations is a closed set.
+
+** Joins
+*Dangling Tuple* are tuples in join operands that do not participate in a join operation.
+
+Inner joins remove any dangiling tuples whereas outer joins add them with a /NULL/ value.
+
+Full outer join can be represented by left outer join \(\cup\) right outer join.
+Below is a good image to show the differences between the various outer joins. Note the positioning of the /NULL/ values.
+
+#+NAME: Outer joins
+#+ATTR_ORG: :width 600
+[[file:images/cs2102_l2_2.png]]
+
+Natural joins are like inner joins, except that they just remove the corresponding attributes which are the same during the join. There is also no /NULL/.
+
+#+NAME: Natural Join
+#+ATTR_ORG: :width 600
+[[file:images/cs2102_l2_1.png]]
