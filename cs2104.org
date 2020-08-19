@@ -47,3 +47,101 @@ This paradigm is known as *declarative programming*, which focuses on what is to
 Functions and relations are the focus.
 
 There is also usually no state. Simple data transforms are used and especially for Haskell, the data structures are immutable.
+
+* Lecture 2
+** Local Binding
+Local Binding is a construct to declare a new identifier. The bindings can be either immutable or mutable.
+
+Examples of binding include method params, local vars, pattern matching.
+
+- In Haskell, local variable binds are immutable and the definitions are also recursive by default. OCaml on the other hand is not recursive by default.
+- For /x in y/ Haskell expressions, the /y/ is the one returned to the caller.
+
+** Typeful Expressions
+#+TITLE: Typeful expressions
+#+BEGIN_SRC  haskell
+e::t where e is the expression and t is the type
+
+use :t to get the type
+#+END_SRC
+
+Haskell also supports type class mechanisms. More about this later, but basically a type class allows us to declare which types are an instance of which class which provides
+definitions of the poverloaded operations of said class
+
+** Function Declarations
+In Haskell, functions can also be defined via the /let/ keyword because functions are also values.
+Haskell also supports multiple and recursive definitions via layout rule.
+
+#+TITLE: Definitions
+#+BEGIN_SRC haskell
+let quad x =
+      let add x y = x + y -- These are nested definitions
+          double x = add x x
+      in (double x) + (double x)
+
+-- Also, by default, Haskell evaluates function arguments in a left associative nature due to the high precedence of space
+-- a b c = (a b) c
+-- Use the $ operator a $ b c to change it to a (b c)
+#+END_SRC
+
+Also, putting a '' around an infix operator turns it into a prefix operator, like any other Haskell functions. This applies to math operators like /*-+/.
+
+** Data Types
+Primitive types are usually very simple, like char and int. It is possible to have a language without primitive types,
+like Lambda calculus, but often these are less performant.
+
+Types in Haskell are very high level, and usually are boxed types. It can help to think of boxed and unboxed as analogous to objects/primitives in Java.
+
+/data Int = Int#I#/
+
+Types have also a strong correspondence to logic. This is known as the *Curry Howard Correspondence*
+
+*** Why Boxed
+1. Polymorphism requires boxed types. Primitive types have fixed sizes, so when declaring things like list, we
+   don't know how much to allocated, but with boxes, we can allocate a constant pointer size
+2. Lazy Evaluation as primitives have to be evaluated in order to store it somewhere. Compare this to boxes, where we can
+   just store a pointer to the suspended operation and then evaluate it whenever necessary.
+
+*** User Defined Types
+
+**** Sum Type (Core)
+This will include things like /t1 | t2 | t3/. This is analogous to disjunction
+
+Includes ordinal and algebraic types
+
+**** Product Type (Core)
+This will include things like /(t1, t2, t3)/. This is analogous to conjunction
+
+Includes records and tuple types
+
+**** Record Type
+This is very similar to a C struct
+#+TITLE: Record
+#+BEGIN_SRC c
+struct Record {
+    int num,
+    char name[],
+}
+#+END_SRC
+
+The types are associated with the fields
+
+**** Union Type
+Union type is similar to record, except that there is only one field at one time.
+So, the fields overlay each other, and the memory allocated to the type is usually the memory required by the largest type the union type can be.
+
+**** Algebraic Type
+This is very similar to the union type, except safer and with data constructor tags
+
+**** Pointer Type
+Not seen in Haskell, because algebraic data type already implemented as a pointer to boxed value. But in C is meant to capture the address of an object value.
+
+**** Tuple Type
+
+**** Ordinal Type
+Like an enum, it is also a special case of Algebraic type, because some enums can have operations like additions performed on them etc.
+
+*** Pattern Matching
+#+NAME: Pattern Matching
+#+ATTR_ORG: :width 500
+[[file:images/cs2104_l2_1.png]]
