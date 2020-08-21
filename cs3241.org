@@ -66,37 +66,39 @@ Radiosity - Energy based approach that is slow and not general.
 All this steps can be implemented in graphics hardware
 
 **** Vertex Processing
-Converting object representations from one coordinate system to another (object, synthetic camera, screen coords) via matrix transformations.
+Converting object representations from one coordinate system to another (object, synthetic camera, screen coords) via matrix transformations. This is because our 3D scene is described by polygons, which in turn is described by their vertices.
 
 Vertex processor also computes lighting.
 
 **** Projection
-This is the process that combines the 3D viewer with the 3D objects to priuce 2D image.
+This is the process that combines the 3D viewer with the 3D objects to produce 2D image.
 
 Two kinds: Perspective projection where all projectors meet at the center of the projection.
 Parallel where the projectors are parallel and center of projection is replaced with a direction of projection.
+
+Part of projection is done by the vertex processor.
 
 **** Primitive Assembly
 Vertices must be collected into geometric objects and primitives before clipping and rasterization can take place. So stuff like lines, polygons, curves
 
 **** Clipping
-A camera can only see the part of the world within the object space, so things not within this space are clipped out via a series of panes.
+A camera can only see the part of the world within the object space, so things not within this space are clipped out via a series of panes via modifying of the polygons if necessary.
 
 #+NAME: Clipping
 #+ATTR_ORG: :width 600
 [[file:images/cs3241_l1_5.png]]
 
 **** Rasterization
-Applies color to the appropriate pixels in the frame buffer.
+Applies color to the appropriate pixels in the frame buffer aka filling in the interior.
 
-For each object, the rasterizer produces a set of *fragments* for each object. *Fragments* are potential pixels and they have a location in frame buffer, color and depth attributes.
+For each object, the rasterizer produces a set of *fragments* for each object/primitive. *Fragments* are potential pixels and they have a location in frame buffer, color and depth attributes.
 
 Vertex attributes are interpolated over the vertex objects by the rasterizer
 
 **** Fragment Processing
 Fragments are processed to determine color of corresponding pixel in frame buffer. Colors are determined by *texture mapping* or interpolation of vertex colors.
 
-Fragments can also be blocked by fragments closer to camera and this is removed (hidden surface removal)
+Fragments can also be blocked by fragments closer to camera and this is removed (*hidden surface removal*)
 
 *** Programmer's interface
 This system is exposed via the graphics library API
@@ -126,3 +128,84 @@ gl.End(); // end of obj definition
 
 *** Lights and Materials
 Types of light and material property (absorption, diffuse vs specular scattering) also matter
+
+* Lecture 2 :OpenGL:
+OpenGL is a library that mainly focuses on rendering.
+
+It however does not have windowing, support for window systems was added by GLUT.
+
+** Open GL Functions
+- Primitives (Points, lines, polygons)
+- Attributes
+- Transformations (Viewing, Modelling)
+- Control (GLUT)
+- Input (GLUT)
+- Query
+ 
+However, it lacks OOP support so there are often multiple functions that do the same thing.
+
+#+BEGIN_SRC cpp
+// All the same
+glVertex3f
+glVertex2i
+glVertex3dv
+#+END_SRC
+
+** State
+OpenGL is a state machine and exposes two types of functions:
+1. Primitive generating - Generates new output if primitive visible
+2. State changing via transformation or attribute functions.
+
+Attributes like color, size, polygon mode are part of state and affect object appearance.
+
+** Sample Program
+
+#+TITLE: Square on Solid background
+#+BEGIN_SRC cpp
+#include <GL/glut.h>
+
+void mydisplay() {
+  glClear(GL_COLOR_BUFFER_BIT);
+  glBegin(GL_POLYGON);
+    glVertex2f(-0.5, -0.5);
+    glVertex2f(-0.5, 0.5);
+    glVertex2f(0.5, 0.5);
+    glVertex2f(0.5, -0.5);
+  glEnd();
+  glFlush();
+}
+
+int main(int argc, char **argv) {
+  glutCreateWindow("simple");
+  glutDisplayFunc(mydisplay);
+  glutMainLoop();
+}
+#+END_SRC
+
+Program defineds a display callback function mydisplay. Every GLUT program must have display callback and it is executed
+everytime the display is refreshed. Main function ends with program entering *event loop*.
+
+However, a better structure would involve having 3 functions:
+1. main() - Defines callbacks, open windows, enters event loop
+2. init() - Sets state variables like attributes
+3. callbacks - display callback function, have input and window functions
+
+*NB:* glOrtho(x1, x2, y1, y2, z1, z2) defines the range of viewing volume, used for clipping.
+
+** Coordinate systems
+The units in /glVertex/ are determined by application and are called object coordinates. OpenGL will convert world coords to camera coords and then to window coords
+
+OpenGL camera is at worldspace origin, looking in negative z-direction. Viewing volume is default centered at origin with side of length 2.
+
+Apart from windows, we can use smaller *viewports*, like /glViewport(x, y, w, h)/. Values are in window coords.
+
+** Transformations and viewing
+In OpenGL, projection is carried out by the projection matrix.
+
+** Polygon issues
+OpenGL only correctly display polygons if simple, convex (all points on line segment between two points in polygon are in polygon), and are flat.
+
+Triangles satisfy all conditions. If not satisfy, may display incorrectly.
+
+** RGB color
+Each color component (R / G / B) is stored separately in frame buffer, usually with 8 bits. Color is part of state and is not part of object, rather assigned when object is rendered.
