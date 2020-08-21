@@ -26,3 +26,72 @@ Encrpytion is one of the primitives in cryptography.
 1. \(D_k(E_k(x))\) where \(k\) is the key. This is known as correctness.
 2. Must be difficult to get useful information from the ciphertext.
 3. Efficent decryption and encryption. (polynomial time)
+
+* Lecture 2
+** Attacking cryptography
+
+The first way to do this is via exhaustive searching, that is, trying out all the possible keys in the key space
+and then hoping that you get the right answer. This is of course bounded by the key space and the key space size
+
+Next is the known plaintext attack. Given a plaintexxt and the corresponding cipher text, check if it is possible to get the key
+
+Lastly, the ciphertext only attack. This checks whether given only the cipher text, the plain text can be decrypted.
+
+** Classical Ciphers
+
+| Name                | Description                                     | Insecure under plain text                      | Insecure under cipher text                                                    | Remarks                                                                   |
+|---------------------+-------------------------------------------------+------------------------------------------------+-------------------------------------------------------------------------------+---------------------------------------------------------------------------|
+| Substitution Cipher | 1-1 mapping of letter to letter                 | Yes, given long enough cipher text             | Yes, frequency analysis                                                       |                                                                           |
+| Vigenere (Shift)    | Use a keyword to as key                         | No                                             | Yes, if we can find the length of the period, k, we can do frequency analysis | See Kasiski method                                                        |
+| Permutation         | Group into blocks of t, then permute each block | Yes                                            | Yes, check if permutation gives valid word                                    |                                                                           |
+| One Time Pad        | Using n bit key and n bit message, XOR each bit | You can, but the key is useless (one time use) | No, not clear how to exhaustive search and leaks no info apart from msg size  | Key must be as long as message and sent on secure channel so not too good |
+
+*Kasiski method: Look for same letter blocks in the cipher text and see how far they are apart. This might gives clues about the period/keyword size of vigenere.
+
+** Security
+
+*** Review
+Formula can be represented as \(G, E, D\) over \(K, M, C\) where G is the key generator, E encryption, D decryption, K the key set, M the plaintext set and C is the ciphertext set
+
+- Requirement: For all \(\forall m \in M\) and \(\forall k \in K\), \(D_k(E_k(x))\).
+- Effiency: G, E, D should run in polynomial time
+- Security: Attacker cannot recover secret key or plaintext
+
+*** Perfect Security
+Regardless of any prior info attacker has, with unlimited power, cipher text should leak nothing about plain text.
+
+But for this to occur, key must be as long as plaintext => impractical
+
+*** Computational Security
+Okay if cipher leaks some info with tiny probability to attacker with bounded computational resources. Failure is considered negligible in practice.
+
+We measure the strength by the estimated number of bits in the key or equivalent exhaustive search => aim for 2^128 and above. For example, even though RSA has 2048 bits, it has exploits that make its search take arounf 2^112, so it is a 112 bit strength key.
+
+** Modern Ciphers
+
+Take into account all attacks, and no exploits should be faster than exhaustive search.
+
+#+NAME: Block cipher
+#+ATTR_ORG: :width 300
+[[file:images/cs2107_l2_1.png]]
+
+#+NAME: Stream cipher
+#+ATTR_ORG: :width 300
+[[file:images/cs2107_l2_2.png]]
+
+#+NAME: Stream vs block cipher
+#+ATTR_ORG: :width 300
+[[file:images/cs2107_l2_3.png]]
+
+*** Stream Ciphers
+
+Given a secret key of smaller size, generate a sequence of same size as message, and then take sequence as key in one time pad.
+
+There are some constraints. Firstly, the key generator must generate a cryptographically secure psuedorandom sequence called the key stream. Cryptographically secure means that it must pass all efficient statistics test and be unpredictable. Psuedorandom means that iit should be indistinguishable from random set.
+
+The psuedorandom generator should map a seed space to an output space in a deterministic fashion. However, this is not good as same seed == same keystream (two key issue in one time pad).
+
+Initial Value (IV) is the solution to this. IV can be a random value or chosen form a counter. A long sequence is generated from secret key using IV as seed. The final cipher text contains the IV, else the recieving end also cannot generate the key to decrypt.
+
+IV is important as without the IV, given a plaintext message X and Y, if the attacker eavesdrops and obtains the corresponding cipher texts U and V, it can get the message X XOR Y, which may be bad for messages like images.
+But with different keys from different IVs, the result is (X XOR Y) XOR (K1, K2), where K1 is not K2.
