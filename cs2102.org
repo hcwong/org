@@ -40,7 +40,7 @@ Foreign keys used to accept null values, but deprecated as of later SQL versions
 
 Insertion of Foreign Keys looks like that - If anyone of the value is /NULL/, insert. Else if it exist, also can insert into the referencing table. Must also reference primary keys.
 
-If its an individual reference, then we must do the comparison individually. See [[https://coursemology.org/courses/1904/assessments/39097][Lecture 01C: Foreign Key]] for more details
+If its an individual reference, then we must do the comparison individually. What this means is that we do the comparison column by column, checking if that value is NULL or present in the table. With multiple references, then we can just do an OR comparison with /NULL/ values, that is, if any of the columns are /NULL/, then it is ok to insert. See [[https://coursemology.org/courses/1904/assessments/39097][Lecture 01C: Foreign Key]] for more details
 
 ** Three Valued Logic of SQL
 SQL has 3 forms of logic: True, False and Unknown (NULL)
@@ -76,7 +76,7 @@ Rename just renames the columns/attribute names, it renames all the attributes a
 1. & Intersection
 2. | Union
 3. - Difference
-4. x Cartesian product (Pick one form LHS and match with each from RHS)
+4. x Cartesian product (Pick one form LHS and match with each from RHS.). Note that cartesian products are non-commutative and non-associative
 
 Stuff like cartesian products come in handy when we have to do selection from multiple tables.
 

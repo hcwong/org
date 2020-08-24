@@ -25,6 +25,7 @@ In computer graphics, 2D images are formed like how they would in cameras and ey
 1. Objects
 2. Light
    - For humans, only care about RGB for luminance images. For monochromatic, only values are grey values
+   - Don't have to match all frequency in visible spectru because of cones only take in RGB
    - There are two types of color: Additive and Subtractive. Additive is formed via RGBs. Subtractive is via filtering white light with Cyan, Magenta and Yellow
 3. Viewer
 4. Material

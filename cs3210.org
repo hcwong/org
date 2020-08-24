@@ -63,3 +63,93 @@ Tasks may also depend on each other resulting in *data* or *control* dependencie
 4. Coordination
 5. Debugging
 6. Performance Modelling/Monitoring
+* Lecture 2
+** Parallel Architecture - Forms of Parallelism
+
+*RECAP*: CPU time = Instructions / Program * Cycle / Instruction * Second / Cycle
+
+*** Bit Parallelism
+Increasing word size so as to reduce the number of instructions we have to do. For example, adding two 32 bit numbers with word size of 16 as opposed to just one instruction with 32 bit word size.
+
+*** Instruction Parallelism
+Has two types: Superscalar (space) and Pipelining (time) parallelism
+
+**** Pipelining
+Different instructions in different stages of the clock cycle.
+
+The disadvantages are pipeline stalls, data and control flow issues
+**** Superscalar
+Involves duplicating the pipelining so as to allow multiple instructions to be in the same stage of the pipeline cycle.
+
+But scheduling is challenging, as we have to decide which instructions to execute together => this scheduling can be done by the compiler (static) or hardware (dynamic).
+
+Also, since multiple instructions can be in the same stage, when calculating CPU time, we prefer to take instructions epr cycle instead of cycle per instruction
+
+*** Thread level Parallelism
+Instruction level parallelism is limited due to data and control dependencies, so only 2-3 instructions can be executed at the same time.
+
+Processor can provide hardware support with simulataenous multi threading => Diff PC, stack register in one core
+
+#+TITLE: Multithreading implementation
+#+ATTR_ORG: :width 300
+[[file:images/cs3210_l2_1.png]]
+
+*** Process level Parallelism
+Needs some form of IPC and works by mapdpign the diferent processes to the diffferent cores.
+
+** Flynn's Parallel architecture taxonomy.
+Classified based on instruction stream and data stream
+
+*** Single Instruction Single Data
+Single instruction stream is executed by a single processing unit and each instruction works on a single data.
+*** Single Instruction Multiple Data
+Single instruction is applied to multiple data by multiple processing units. This is analogous to a map function.
+*** Multiple Instruction Single Data
+Multiple instructions being applied to a single data by multiple PUs. Doesn't exist IRL.
+*** Multiple Instruction Multiple Data
+Multiple PUs, each taking in their own independedent data stream and instruction stream. This is the basis of most multiprocessors
+*** Variants
+Variants of the above are possible. For example GPUs use a mixture of SIMD and MIMD.
+
+** Multicore Architecture
+*** Hierachial Design
+Multiple cores share multiple caches. As the caches get further from the core, they get bigger, and slower. Example of this is the L1 L2 cache structure.
+*** Pipelined Design
+Data elements are perocessed by multiple cores in a pipelined manner. All the cores are connected to a shared cache and memory.
+This is useful when some sequence of computation needs to be done on a data.
+*** Network Based Design
+Cores and their local cache and memory are independent units, but are connected via some interconnection network control.
+
+** Memory Organization
+#+TITLE: Memory Organization
+#+ATTR_ORG: :width 300
+[[file:images/cs3210_l2_2.png]]
+
+*** Distributed Memory System
+Each node, consisting of processor, cache and memory are independent and the memory is private to each node. Data exchange between nodes take place via message passing (expensive) through a network.
+Memory is *not* shared.
+*** Shared Memory System
+Parallel programs access threads via a shared memory provider. Actual hardware memory architecture is abstracted away.
+Data exchange takes place via shared variables.
+
+The disadvantages of these are memory consistency and cache coherence issues. If one core changes a shared variable, we have to ensure that the rest of the cores have the same consistent view of the memory, and that their caches must be the same. This is usually done by hardware. There is also the issue of contention as there may be a limit to how many processes can simultaenous access memory due to issues like I/O or read port overcrowding.
+
+Two other factors affect shared memory systems: Processor to memory delay and presence of a local cache with cache coherence protocol.
+
+| Advantages                                             | Disadvantages                     |
+|--------------------------------------------------------+-----------------------------------|
+| - No need to partition code or data                    | - Need synchronization constructs |
+| - No need to move data amongst processors => efficient | - Contention                      |
+
+**** UMA
+Latency of accessing main memory is uniform as memory is shared, though runs the risk of contention
+**** NUMA
+Physical memory is distributed across the different nodes (but still shared!), though now accessing other node's memory takes far longer (non-uniform) than accessing local memory.
+**** Cache Coherent NUMA
+Each cache maintains the cache coherence between the different processors.
+**** Cache Only Memory Architecture
+Each memory block works as cache memory and the blocks are indpendent. Data migrates dynamuically and continously according to coherence scheme.
+**** Hybrid
+#+TITLE: Hybrid distributed-shared architecture
+#+ATTR_ORG: :width 300
+[[file:images/cs3210_l2_3.png]]
