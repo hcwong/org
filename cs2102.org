@@ -109,3 +109,38 @@ Natural joins are like inner joins, except that they just remove the correspondi
 #+NAME: Natural Join
 #+ATTR_ORG: :width 600
 [[file:images/cs2102_l2_1.png]]
+* Lecture 3
+
+SQL is in general case insensitive, but good to be consistent
+
+** Tables
+Built in data-types size may differ from implementation to implementation.
+
+Go for VARCHAR instead Of CHAR as it is faster. Also note that all the data types support a NULL value.
+
+Column constraints help to check a given column and reject on False. Keywords include /PRIMARY KEY, UNIQUE, NOT NULL, CHECK/. Though you can check another column if in another column.
+
+Table constraints checks the given table and reject on False. It is different from column constaints in that we can check for multiple column constraints at the same time. For example /PRIMARY_KEY (c1, c2 ..)/ instead of just /PRIMARY_KEY/.
+
+/PRIMARY_KEY/ must be unique and NOT NULL
+
+For Foreign keys, if /A/ refers to /B/, then /B/ must be a candidate key.
+
+*** Foreign Key Action
+Two types of actions: ON DELETE AND ON UPDATE
+
+Useful actions include /CASCADE, SET DEFAULT, SET NULL/
+
+*** Altering a Table
+/ALTER TABLE table_name action/
+
+Can add, drop columns and column constraints
+
+/INSERT INTO table_name (col1, ... ,coln) VALUES (v1, ..., vn)/ . If no col, then we assume default ordering.
+
+/DELETE FROM table_name WHERE condition/ to remove.
+
+/UPDATE table_name SET column_name = expression WHERE condition/
+
+*** Asking a Table
+/SELECT DISTINCT a1, a2, a3 from t1, t2, t3 where condition/. We use /SELECT DISTINCT/ to maintain a one to one correspondence with relational algebra which removes duplicates.
