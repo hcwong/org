@@ -76,7 +76,7 @@ Rename just renames the columns/attribute names, it renames all the attributes a
 1. & Intersection
 2. | Union
 3. - Difference
-4. x Cartesian product (Pick one form LHS and match with each from RHS.). Note that cartesian products are non-commutative and non-associative
+4. x Cartesian product (Pick one form LHS and match with each from RHS.). We treat cartesian operators as associative in CS2102 due to isomorphism.
 
 Stuff like cartesian products come in handy when we have to do selection from multiple tables.
 

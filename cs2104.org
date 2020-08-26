@@ -51,7 +51,6 @@ There is also usually no state. Simple data transforms are used and especially f
 * Lecture 2
 ** Local Binding
 Local Binding is a construct to declare a new identifier. The bindings can be either immutable or mutable.
-
 Examples of binding include method params, local vars, pattern matching.
 
 - In Haskell, local variable binds are immutable and the definitions are also recursive by default. OCaml on the other hand is not recursive by default.
@@ -126,6 +125,8 @@ struct Record {
 
 The types are associated with the fields
 
+Record Types are immutable by default in OCaml and it is encouraged.
+
 **** Union Type
 Union type is similar to record, except that there is only one field at one time.
 So, the fields overlay each other, and the memory allocated to the type is usually the memory required by the largest type the union type can be.
@@ -136,12 +137,72 @@ This is very similar to the union type, except safer and with data constructor t
 **** Pointer Type
 Not seen in Haskell, because algebraic data type already implemented as a pointer to boxed value. But in C is meant to capture the address of an object value.
 
+Pointer types are crucial for recursive data type in C. Recursive types are possible in Haskell but can be infinite. NOTE: Don't confuse this with type synonyms.
+
 **** Tuple Type
+Tuple differ from record types in that they have no field name, just access by position
 
 **** Ordinal Type
 Like an enum, it is also a special case of Algebraic type, because some enums can have operations like additions performed on them etc.
+
+**** Type Synonyms
+Type synonyms cannot be recursive in Haskell, unlike in C.
+
+**** Untyped Languages
+Essentially just sums different types togther, but without no constructor tags then there is no type safety that can be ensured at both compile and runtime.
 
 *** Pattern Matching
 #+NAME: Pattern Matching
 #+ATTR_ORG: :width 500
 [[file:images/cs2104_l2_1.png]]
+
+** Type Classes
+Type classes is like polymorphism for types => defining types by the operations they can potentially support. Like polymorphism, can support overloading.
+
+#+BEGIN_SRC haskell
+class Eq a where
+  (==), (/=) :: a->a->Biik
+  x /= y = not (x == y)
+#+END_SRC
+
+Type classes can be extended and open.
+
+#+BEGIN_SRC haskell
+instance Eq Integer where
+  x == y = x 'integerEq' y
+#+END_SRC
+
+Recursive types can be handled but elements need to be given type qualifiers.
+
+*** Class Extension
+Haskell also supports the notion of extending from some base class type.
+
+#+BEGIN_SRC haskell
+class (Eq a) => Ord a where
+  (<), (<=), (>), (>=) :: a->a->Bool
+  max, min :: a->a->a
+#+END_SRC
+
+Multiple inheritance is also supported.
+
+** Enumeration Class
+Supports syntatic sugar for arithmetic sequences /[a..b]/
+
+** Show class
+Show class is for types that can be converted to the character string.
+
+** Read Class
+Handles the converse of parsing a data structure from a string
+
+** Derived instances
+Helps with writing instances for standard type classes can be tedious.
+
+** Direct Handling
+Use Maybe type or Either type.
+
+** Language Constructs
+For Haskell, we mainly use expression oriented constructs
+
+#+TITLE: Expression Oriented Construct
+#+ATTR_ORG: :width 300
+[[file:images/cs2104_l3_1.png]]
