@@ -51,3 +51,22 @@ code({
 
 As seen, this method also does some form of implicit memoization, we could also make the memoization explicit,
 with stuff like Lodash's once function or just via plain closures or properties
+
+* Javascript scoping
+For CS2104 Tutorial Presentation [[https://medium.com/@shilpasyal55/in-depth-analysis-of-variable-scoping-in-javascript-7ee3f832227f][(Source)]]
+
+Binding of JS - In terms of scope.
+
+Javascript has two main scopes:
+1. Global
+2. Local
+
+Global scope applies to any variable declared outside a function scope. Variables declared with the /var/ keyword are also automatically placed as part of the window object if declared in the global scope.
+
+Variables declared in a function are part of the function scope and cannot be accessed outside of that function.
+
+ECMA6 introduced block scoping to be more mainstream -> blocks like loops instead of functions.
+
+Inner functions always have access to outer function variables. This is called lexical scoping.
+
+Variable shadowing - If the same variable is used in different scopes, the inner one shadows the outer one, as JS lookup table looks from the inner scope outwards => if cannot find, throws a reference error.
