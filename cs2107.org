@@ -156,4 +156,4 @@ In CBC decryption, each cipher text is passed through the decryption cipher, and
 [[file:images/cs2107_l3_1.png]]
 
 
-Notice that I' = C1 XOR P and P = C1 XOR I', where C1 is the preceeding block.
+Change each relevant byte of C1' and XOR with the decrypted key until you get a plaintext P_2 with the correct padding value. Then XOR P_2's byte with the corresponding C1' byte to get the I_2 byte. Because I_2 is the actual decrypted value of the actual cipher text, you can now XOR with the corresponding byte from the real cipher text C to get the actual plaintext value P.
