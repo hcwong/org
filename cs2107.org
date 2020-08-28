@@ -44,7 +44,7 @@ Lastly, the ciphertext only attack. This checks whether given only the cipher te
 | Name                | Description                                     | Insecure under plain text                      | Insecure under cipher text                                                    | Remarks                                                                   |
 |---------------------+-------------------------------------------------+------------------------------------------------+-------------------------------------------------------------------------------+---------------------------------------------------------------------------|
 | Substitution Cipher | 1-1 mapping of letter to letter                 | Yes, given long enough cipher text             | Yes, frequency analysis                                                       |                                                                           |
-| Vigenere (Shift)    | Use a keyword to as key                         | No                                             | Yes, if we can find the length of the period, k, we can do frequency analysis | See Kasiski method                                                        |
+| Vigenere (Shift)    | Use a keyword to as key                         | Yes                                            | Yes, if we can find the length of the period, k, we can do frequency analysis | See Kasiski method                                                        |
 | Permutation         | Group into blocks of t, then permute each block | Yes                                            | Yes, check if permutation gives valid word                                    |                                                                           |
 | One Time Pad        | Using n bit key and n bit message, XOR each bit | You can, but the key is useless (one time use) | No, not clear how to exhaustive search and leaks no info apart from msg size  | Key must be as long as message and sent on secure channel so not too good |
 
@@ -97,3 +97,63 @@ Initial Value (IV) is the solution to this. IV can be a random value or chosen f
 
 IV is important as without the IV, given a plaintext message X and Y, if the attacker eavesdrops and obtains the corresponding cipher texts U and V, it can get the message X XOR Y, which may be bad for messages like images.
 But with different keys from different IVs, the result is (X XOR Y) XOR (K1, K2), where K1 is not K2.
+* Lecture 3
+
+** Block Cipher
+Is an important crypto primitive. For block cipher, M = C = {0, 1}^n with n = block size
+
+The longer the key is, the more secure the scheme but the slower it is.
+
+** Keyed Pseudorandom Permutation - E: K x X -> X
+- There exists an efficient deterministic algo to evaluate E(k, x)
+- Output looks random
+- E is bijective and hence length preserving
+- There exists efficient inversion algorithm (decryption)
+
+The block cipher can be seen as a permutation function that maps 2^n plaintext to 2^n cipher text.
+The permutation is determined by the key and different key should be mapped to different permutation. This is done by
+the adorementioned keyed psuedorandom permutation.
+
+** How Block Cipher works
+An iteration of rounds. So there exist a round function f(x, k), where k may have undergone preprocessing like key expansion. In each round, the same round function is used, but the round key (subkey) is different. n different roundkey for n rounds.
+
+** DES
+Has a block size of 64 and key size of 56.
+
+It works in 16 rounds using Feistel round function. Feistel has a substitution box for confusion and a permtutation for permutation. But this is broken
+
+One option is to use double DES, though this can be broken by meet in the middle attack. 3 DES is okay but is is 3 times slower and only has block size of 64.
+
+** AES
+Block size of 128 bits and key size of 128, 192, or 256 bits. It uses a substitution and permutation network, different from Feistel. Currently secure.
+
+AES is probablistic if we use a randomly chosen IV.
+
+** Properties
+Diffusion - change in plaintext will affect many parts of the cipher text.
+
+Confusion - an attakcer should not be able to predict what happens to cipher text when one character in plaintext changes.
+
+** Mode of operations of Block Cipher
+*** ECB
+Use same key for each block of plaintext - But if we do this, then if two plaintext blocks are the same, so will their ciphertext.
+*** Cipher Block Chaining
+Use an IV at first, then XOR with the first block, encrypt, and use that as first box of cipher text. Pass this first block also as IV to the next block and so on.
+*** Counter Mode
+Increment IV for each block => then we encrypt the IV and XOR with the block like in one time pad to generate the output.
+
+** Attacks
+*** Meet in the Middle
+This has been explained in the earlier section under DES.
+*** Padding Oracle Attack
+Given a cipher text and IV, the Padding Oracle lets us know if the plaintex has the correct padding format. We pad when the last block of plaintext is not the same size as the block size, the pad.
+Standard padding formats include PKCS#7.
+
+In CBC decryption, each cipher text is passed through the decryption cipher, and XORed with the previous cipher text.
+
+#+TITLE: Figure 1
+#+ATTR_ORG: :width 400
+[[file:images/cs2107_l3_1.png]]
+
+
+Notice that I' = C1 XOR P and P = C1 XOR I', where C1 is the preceeding block.

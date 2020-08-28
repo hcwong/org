@@ -197,6 +197,7 @@ However, a better structure would involve having 3 functions:
 The units in /glVertex/ are determined by application and are called object coordinates. OpenGL will convert world coords to camera coords and then to window coords
 
 OpenGL camera is at worldspace origin, looking in negative z-direction. Viewing volume is default centered at origin with side of length 2.
+In the default orthographic view, points are projected forward along the z axis onto the plane z = 0.
 
 Apart from windows, we can use smaller *viewports*, like /glViewport(x, y, w, h)/. Values are in window coords.
 
@@ -210,3 +211,53 @@ Triangles satisfy all conditions. If not satisfy, may display incorrectly.
 
 ** RGB color
 Each color component (R / G / B) is stored separately in frame buffer, usually with 8 bits. Color is part of state and is not part of object, rather assigned when object is rendered.
+
+* Lecture 3
+** 3D applications
+In OpenGL, 2D is just a special case of 3D so there are not too many changes, just use the glVertex3*() series functions..
+
+** Sierpinski Gasket
+Start with a triangle, connect bisector of sides and remove central triangle.
+#+TITLE: Sierpinski
+#+ATTR_ORG: :width 300
+[[file:images/cs3241_l3_1.png]]
+
+However, as we continue subdividing, area goes to 0 and perimeter goes to infinity. This is a fractional dimension object, known as a fractal.
+
+3D Gasket can be done by subdividing each of the four faces. Appears as if we remove solid tetrahedron from the center leaving 4 smaller tetrahedra.
+
+** Hidden Surface Removal
+OpenGL uses a z-buffer algorithm to save depth information as objects/polygons are rendered.
+
+** Graphical Input
+Devices can be described by physical properties like mouse and keyboard and logical properties like what is returned to the program via API.
+
+*** Incremental Devices
+Devices such as the data tablet return position directly to operating system, whereas mouse and all return incremental inputs.
+
+** Trigger and Measure
+Input devices contain a trigger which can be used to send a signal to the OS, and it returns information (their measure) to the system.
+
+** Event Mode
+Each trigger generates an event whose measure is put into the event queue for later processing. We can then define
+callback functions and tag it to a certain event to respond accordingly.
+
+** Posting Redisplay
+Many events implicitly invoke the display callback function. To avoid spamming it in a single event loop, we can use the /glutPostRedisplay()/ function.
+
+** Animating a display
+When redrawing, we clear the window then draw. But the drawing of info in frame buffer is decoupled form display => result in partially drawn display.
+
+Solution is to use two color buffers, and swap whenever necessary.
+
+** Positioning
+Y coordinate of mouse cursor position and OpenGL are different. To convert: y_{opengl} = h - 1 - y_{win}.
+
+Note that to invert the y position we need the window height => this can be tracked with a global variable.
+
+** Reshaping window
+Two possibilities: Display part of world or display whole world but force to fit in new window. OpenGL exposes a reshape callback function.
+
+Reshape callback is a good place to put the viewing function because it is invoked when the window is first opened.
+
+We tend to return to modelview mode after the reshape callback.
