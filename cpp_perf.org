@@ -68,3 +68,22 @@ In the example above, we don't copy the heap data like the copy constructor and 
 
 * Copy and Swap Idiom :cpp:
 From [[https://stackoverflow.com/questions/3279543/what-is-the-copy-and-swap-idiom][this SO post]]
+
+* Lambdas in C++11 and above :Lambdas:
+From this [[https://stackoverflow.com/questions/7627098/what-is-a-lambda-expression-in-c11][SO Link]]
+
+#+TITLE: Lambdas
+#+BEGIN_SRC cpp
+[]() {} // barebone lambda
+
+/*
+Capture Groups
+[x] value
+[&x] ref
+[&] any reference in scope
+[=] any value in scope
+,*/
+
+// Mutable
+[]() mutable -> T{} // where T is the return type
+#+END_SRC
