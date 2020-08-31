@@ -148,8 +148,92 @@ Physical memory is distributed across the different nodes (but still shared!), t
 **** Cache Coherent NUMA
 Each cache maintains the cache coherence between the different processors.
 **** Cache Only Memory Architecture
-Each memory block works as cache memory and the blocks are indpendent. Data migrates dynamuically and continously according to coherence scheme.
+Each memory block works as cache memory and the blocks are indpendent. Data migrates dynamically and continously according to coherence scheme.
 **** Hybrid
 #+TITLE: Hybrid distributed-shared architecture
 #+ATTR_ORG: :width 300
 [[file:images/cs3210_l2_3.png]]
+* Lecture 3
+Parallelism - avg units of work (tasks + dependencies) that can be performed in parallel per unit time
+
+Limits of parallelism include data and control dependencies, comm && thread/process overhead, synchronization, contention
+
+| Data Parallelism                                                                       | Task Parallelism    |
+|----------------------------------------------------------------------------------------+---------------------|
+| Partition the data so each processing unit carries out same operations on part of data | Partition the tasks |
+
+** Data Parallelism
+Good when the operations are independent - also supported by libraries like OpenMP's pragma statements.
+
+Common Model : Single Program Multiple Data where a parallel program is executed by all processors in parallel.
+
+** Task Parallelism
+Can use a task dependence graph to visualize the task decomposition strategy. This is a DAG, where the node represents each task (node val is task execution time) and the edge a control dependency.
+Properties of the task dependence graph include critical length path (slowest time) and degree of concurrency (tota task/critical path length)
+
+** Representation of Parallelism
+#+ATTR_ORG: :width 300
+[[file:images/cs3210_l3_1.png]]
+
+** Models of Communication
+*** Shared Address Space
+- Communication via shared variables
+- Ensure mutual exclusion via locks
+- Logical extension of uniprocessor programming
+However, this usually requires hardware support to work efficiently. Even with NUMA, it is still relatively costly to scale.
+*** Data Parallel
+Same operation on each element of an array => no communication between distinct function invocations. This model is analogous to stream programming, but it is very restrictive.
+*** Message Parsing
+Tasks have their own private address space, matches distributed memory systems.
+*** Correspondence with hardware implementations
+In general, there isn't a 1-1 correspondence per se, but it is easier to mimic message parsing with shared memory hardware systems than vice versa.
+
+** Program Parallelization
+First we need to define the tasks of an apt granularity, along with their dependencies.
+
+Task/Channel Model consists of the code and data for parallelization mapped onto processors and they communicate via message buffers (channels)
+*** Foster's Design Methodology
+**** Partitioning
+We can divide it into data or task parallelism.
+
+Paritioning Rules Of Thumb
+
+1. At least 10x more primitive tasks than processors in target machine
+2. Minimize redundant computations and data storage
+3. Primitive tasks of roughly the same size
+4. Number of tasks proportional to problem size
+**** Communication
+Local communication where tasks only needs data from small subset of other tasks. Global if it needs values from a lot of other tasks.
+
+Rules of Thumb
+1. Communication operations balanced out.
+2. Each tasks communicates locally mostly
+3. Communication can be done in parallel.
+4. Overlap computation and communication.
+
+**** Agglomeration
+Combine tasks into larger tasks, but still number of tasks >= cores. The core idea is to reduce the number of communication.
+
+Rules of Thumb
+1. Communication should decrease
+2. Number of tasks still proportional to problem size
+3. Still 10x more tasks than cores
+4. Tradeoff between agglomeration and code modification.
+**** Mapping
+Maximize processor utilization, but minimize inter processor communication.
+
+Rules of Thumb
+1. Heuristic to get optimal mapping
+2. Design tasks based on one task per processor and multiple task per processor.
+3. If dynamic task allocator, task allocator should not be a perf bottleneck. Static allocator should still follow 10:1 rule
+*** Decomposition
+Generate enough tasks to keep cores busy at all times and larger than overhead -> can be static or dynamic.
+*** Scheduling
+Find efficient task execution order -> can be static or dynamic.
+*** Mapping
+Assignment of processes and threads to execution units -> Focus on performance by minimizing communication and utilizing all cores.
+*** Automatic Parallelization
+Letting compilers decompose and schedule.
+But dependence analysis is hard with pointer based computation or indirect addressing, execution time of calls or loops with unknown bounds also hard.
+*** FP languages
+Benefit is that the functions are already independent, but we have to figure out when at which function level we want to extract parallelism.
