@@ -144,3 +144,50 @@ Can add, drop columns and column constraints
 
 *** Asking a Table
 /SELECT DISTINCT a1, a2, a3 from t1, t2, t3 where condition/. We use /SELECT DISTINCT/ to maintain a one to one correspondence with relational algebra which removes duplicates.
+* Lecture 4
+** Entity Relationship Model
+1. Attributes - Describe real world object
+2. Entities - real world object, can be seen as collection of attributes.
+3. Relationships - association between entities
+
+Drawbacks: Cannot capture candidate keys, only primary key.
+
+Entities can be represented by a table. Relationship sets on the other hand, can be also represented as a table, albeit with a foreign key.
+
+Relationship cannot have its own separate identities (attributes that do not make sense on it).
+
+#+NAME: Relationship Constraints
+#+ATTR_ORG: :width 400
+[[file:images/cs2102_l4_1.png]]
+
+** Additional ER concepts
+*** Weak Entity Sets
+Identity Dependency where the attribute of an entity cannot uniquely identify an entity
+
+Existential Dependency states that the existence of an entity depends on another entity, but it can be uniquely identified.
+
+*** IS-A hierachy
+Specialized entity sets inherit attributes from generalized attribute sets.
+
+There are two constraitns: Overlap if an entity can belong to multiple specialized subclasses and Covering if every generalized entity has to be in some specialized set.
+
+*** Aggregation
+Higher order entity where a relationship set is treated as an entity set.
+
+** ER to SQL
+Identity attribute to primary key, rest of them to attributes
+
+For relationship, if unconstrained, just make the entity identity attrs primary key.
+
+If there's a key constraint for one identity, then can set the primary key of relationship table to be that entity's primary key, or combine that entity with the relationship table.
+
+If there's a key + total participant constraint for one of the entity, then the relationship table will have to be combined with that entity's table.
+
+For roles, just add them as an foreign key attribute
+
+Identity dependency will put primary key as both the weak entity's id and the main entity's id, and theres an on delete cascade.
+Existential dependency will have the on delete cascade but the weak entity will have an attribute that can serve as primary key
+
+IS-A will have an on delete cascade with subtables if no covering constraint, else there's no need for a main table.
+
+For aggregation, just treat the aggregated relation as a table an an indpendent relation and use it as a reference in another table.
