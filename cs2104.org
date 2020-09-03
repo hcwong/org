@@ -206,3 +206,71 @@ For Haskell, we mainly use expression oriented constructs
 #+TITLE: Expression Oriented Construct
 #+ATTR_ORG: :width 300
 [[file:images/cs2104_l3_1.png]]
+
+** Tuple vs Curried Functions
+Tuple and Curried Fucntions are isomorphic, you can convert one to the other
+(x, y) -> addCurry x y
+\ x -> \ y -> addTuple(x, y)
+
+** Recursion and Tail Recursion
+Tail Recursion helps to keep the stack size constant.
+* Lecture 4
+Functions should be first class - value and type, passed as argument, returned, constructed at runtime (lambda), stored in data structures.
+
+** Functions that returns functions
+Equivalent to curried functions
+
+** Lazy Evaluation via Function
+#+BEGIN_SRC haskell
+(\ () -> e)
+#+END_SRC
+
+This is very much like a thunk.
+
+Lazy evaluation helps Haskell handle cases like infinite lists well. Though if there is a need for strict evaluation then
+use the operator /!/ in front of the expression.
+Another option for strict evaluation is the /seq/ keyword, which forces the strict evaluation first - /e1 'seq' e2/. Strict evlauation also occurs before pattern matching.
+
+** Genericity
+Replace each constant or function that differs by a parameter.
+#+BEGIN_SRC haskell
+let foldr f z xs =
+      let aux xs =
+            case xs of
+              [] -> z -- basecase
+              y:yx -> f y (aux ys)
+      in aux xs
+#+END_SRC
+
+This is an example of the fold right operator -> operate on RHS side first.
+
+Fold left is just the opposite -> operator on the RHS first. However, a key thing to note is that fold left operators tend to be *tail recursive*.
+
+#+BEGIN_SRC haskell
+let fold l f z cs =  -- z is the accumulator original value
+      let aux xs acc =
+            case xs with
+            | [] -> acc
+            | y:ys -> aux (f acc y) ys
+      in aux z xs
+#+END_SRC
+
+If the reduction /f/ is associative, then we can use fold left or fold right, if not then we have to choose between foldl and foldr carefully.
+
+It is also not always the case that foldl has better performance foldr.
+
+There is also a *Foldable* type class that also has a whole lotta other fold style operations.
+
+** Mapping
+map : (a -> b) -> [a] -> b
+
+** Functor
+A function which takes a function like fmap and returns another function.
+#+BEGIN_SRC haskell
+class Function f where
+  fmap:: (a -> b) -> f a -> f b
+#+END_SRC
+Map is an the list implementation of fmap
+
+** Composition
+Composition is an instance of functor fmap.
