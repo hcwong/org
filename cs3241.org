@@ -261,3 +261,85 @@ Two possibilities: Display part of world or display whole world but force to fit
 Reshape callback is a good place to put the viewing function because it is invoked when the window is first opened.
 
 We tend to return to modelview mode after the reshape callback.
+
+* Lecture 4
+Geometry is the study of spatial relationships among objects in n-dimensional space.
+We use 3 primitives - scalars, vectors, points from which we can build more sophisticated objects.
+
+** Affine Space
+Because vectors don't have a position, only direction, we join a point and a vector space to define an affine space.
+
+*** Rays and Line Segements
+If \(\alpha >= 0\), then \(P(\alpha)\) = P_0 + \(\alpha . d\), where \(P(\alpha\) is the ray leaving the point P_0 in direction d.
+
+** Representation
+Need a frame of reference to relate points and objects to physical world.
+
+*** Coordinate systems
+Consider a basis v_1, v_2, ..., v_n. (set of linearly independent vector).
+A vector is written v = a_1.v_1 + ... + a_n.v_n. The list of scalars {a_1, ..., a_n} is the representation of v wrt given basis.
+
+*** Frames
+Coordinate system insufficient to represent points. In affine space, we add origin to basis vectors to form a frame.
+Thus the frame is determined by (P_0, v_1, v_2, v_3).
+
+*** Homogenous Coordinates
+Let \(x\) be \([v_1, v_2, v_3, P_0]\).
+A vector will be represented as \(x . [a_1, a_2, a_3, 0]^T\).
+
+A point on the other hand will be represented as \(x . [b_1, b_2, b_3, 1]^T\)
+
+Usually however we omit the \(x\).
+
+Homogenous coordinates are important as now all transformations can be implemented with matrix multiplications using 4x4 matrices.
+
+*** Object, World and Camera Frames
+We work with n-tuples all arrays of scalar when working with representation. In OpenGL, vertices specified in object frame. Vertices then represented in world frame. Then entities are represented in the camera frame using model view matrix.
+
+** Transformation
+Rotations, Translation, Scaling, Shear. The former 2 are rigid body transformations (preserve shape).
+
+*** Affine Transformations
+- Are line preserving
+
+*** Translation
+#+NAME: Translation Matrix
+#+ATTR_ORG: :width 400
+[[file:images/cs3241_l4_1.png]]
+
+*** Rotation
+- \(x' = x.cos(\theta) - y.sin(\theta)\)
+- \(y' = x.sin(\theta) - y.cos(\theta)\)
+- \(z' = z\)
+
+#+NAME: Rotation
+#+ATTR_ORG: :width 300
+[[file:images/cs3241_l4_2.png]]
+
+#+NAME: Rotation Matrix
+#+ATTR_ORG: :width 300
+[[file:images/cs3241_l4_3.png]]
+
+*** Scaling and Reflection
+Involves multiplying the values by either the scale factor or 1/-1.
+
+*** Inverse
+- Translation: \(T^{-1}(d_x, d_y, d_z) = T(-d_x, -d_y, -d_z)\)
+- Rotation: \(R^{-1}(\theta) = R^T(\theta)\)
+- Scaling: \(S^{-1}(s_x, s_y, s_z) = S(1/s_x, 1/s_y, 1/s_z)\)
+
+*** Concatenation
+Can form arbitray affine transformation matrices by multiplying rotation transformation scaling matrices.
+
+*** Shear
+Pulling faces in opposite directions
+
+** OpenGL Matrices
+Current Transformation Matrix is a 4x4 matrix applied to all vertices in the pipleine. We change CTM by loading a new one or by post-multuplication.
+
+OpenGL has a model-view and projection matrix in the pipeline. Each has a CTM and can be manipulated indpendently.
+
+Model-view matrix is use to transform objects to worldspace and position camera. Projection matrix is used to define the view volume.
+
+*** Matrix stacks
+Allow us to save transformation matrices for use later.
