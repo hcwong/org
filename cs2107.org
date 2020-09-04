@@ -98,7 +98,6 @@ Initial Value (IV) is the solution to this. IV can be a random value or chosen f
 IV is important as without the IV, given a plaintext message X and Y, if the attacker eavesdrops and obtains the corresponding cipher texts U and V, it can get the message X XOR Y, which may be bad for messages like images.
 But with different keys from different IVs, the result is (X XOR Y) XOR (K1, K2), where K1 is not K2.
 * Lecture 3
-
 ** Block Cipher
 Is an important crypto primitive. For block cipher, M = C = {0, 1}^n with n = block size
 
@@ -157,3 +156,72 @@ In CBC decryption, each cipher text is passed through the decryption cipher, and
 
 
 Change each relevant byte of C1' and XOR with the decrypted key until you get a plaintext P_2 with the correct padding value. Then XOR P_2's byte with the corresponding C1' byte to get the I_2 byte. Because I_2 is the actual decrypted value of the actual cipher text, you can now XOR with the corresponding byte from the real cipher text C to get the actual plaintext value P.
+** Security Analysis of a Cipher
+Is done with respect to the thread model asd the security guarantee (what we do not want attacker to accomplish)
+*** Black box threat model
+Attacker sees what gets in and out of a cipher - cannot see secret key. Cipher text only and known plaintext attacks fall under this model.
+*** Gray box
+Attacker has access to a cipher's implementation.
+
+Side channel attacks take advantage of information that depends on impl of cipher, like power consumption etc.
+Invasive attacks are more invasive and do not just observe/measure analog characteristics.
+** Reusing IV
+Some programs overlook IV generation - like just using filename -  and this is not secure.
+
+** Kerckhoff's Principle
+System should still be secure even if everything about the system except the secret key is public knowledge.
+
+** Security through Obscurity
+We can use security via obscurity if its part of a multi-layered defense.
+
+* Lecture 4
+** Authentication
+Process of ensuring that the communicating entity is the one it claims to be:
+1. Entity authentication
+2. Data-origin authentication - communicating entity is the origin of a piece of information (digital signature).
+
+Data-origin authenticity \(\implies\) data integrity, but not the converse, as authenticity is a stronger requirement than integrity.
+
+** Password (Weak authentication)
+Identity is not a secret, but password is. Password is considered weak authentication because it is one that is subjected to simple replay attack.
+*** Bootstrap
+Server and User establish a common password
+*** Authentication
+Server generates an entity.
+
+** Attacking Password
+*** Attack Bootstrap
+- If there are deafult passwords, can try attacking.
+- Guess password. In online guessing, directly interact with the authentication system. In offline, attacker can obtain from the authentication system.
+- Exhaustive search is an option if there's no fixed password length.
+*** Stealing
+- Shoulder surfing
+- Sniffing communication or sniffing wireless keyboard.
+- Key logger
+- Login spoofing
+- Phishing
+- Password Cache
+- Insider attack
+
+** Protecting Password
+- Use strong password
+- Protect password through means like special characters, change password
+- Protecting password file through means like salt-based hashing
+
+** Security Questions
+Mechanism for fallback authentication
+
+Criteria:
+- Memorable
+- Consistent
+- Nearly universal
+- Safe
+
+** ATM Attack
+Card's magnetic strip contains the account ID, so add the card reader to read the ID and then spoof the password to get id and password.
+
+** Biometric
+Use unique physical characteristics of a person. During enrollment, reference template of user's biometric data is constructured and stored. Then the verification, the biiometric is compared to the template using matching algorithm.
+However, this is not always 100% correct (See false match rate vs false non match rate).
+
+The threshold for FMR and FNMR can be adjusted. Other errors include failure to enroll or failure to capture (during verification).
