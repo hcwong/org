@@ -191,3 +191,88 @@ Existential dependency will have the on delete cascade but the weak entity will 
 IS-A will have an on delete cascade with subtables if no covering constraint, else there's no need for a main table.
 
 For aggregation, just treat the aggregated relation as a table an an indpendent relation and use it as a reference in another table.
+
+* Lecture 5
+** Pattern Matching
+#+BEGIN_SRC sql
+SELECT  _ FROM _ WHERE attr LIKE pattern
+#+END_SRC
+Rules for pattern:
+1. '_' matches any one character
+2. '%' matches 0 or more of any character
+  
+** Conditionals/Case Analysis
+#+BEGIN_SRC sql
+SELECT attr, CASE [optional expr]
+       WHEN conditional then res
+       ...
+       END
+FROM _
+WHERE _
+#+END_SRC
+
+The case analysis part can also be moved to after the where clause.
+
+** NULLIF
+#+BEGIN_SRC sql
+SELECT NULLIF (attr, value) FROM _ WHERE _
+#+END_SRC
+If attribute has that value then NULL else just the original attr value.
+
+** COALESCE
+#+BEGIN_SRC sql
+SELECT COALESCE (attr1, attr2 ...) FROM _ WHERE _
+#+END_SRC
+If attr1 is not NULL then attr1, else attr2 and so on till the end
+
+** UNION
+Can UNION or UNION ALL select queries. Difference is that UNION ALL allows duplicate values.
+
+** INTERSECT
+Like UNION, INTERSECT ALL allows duplicate values.
+
+** EXCEPT
+EXCEPT takes the distinct rows of one query (the first one) nad returns the row that do not exist in a second result set. EXCEPT all leaves the rows as they are.
+
+** INNER JOIN
+#+BEGIN_SRC sql
+SELECT _ FROM table1 INNER JOIN table2 ON condition WHERE _
+#+END_SRC
+
+** LEFT/RIGHT OUTER JOIN
+#+BEGIN_SRC sql
+SELECT _ FROM table1 LEFT JOIN table2 ON condition
+#+END_SRC
+
+If is left outer join, then table2 may have null values but not table1. Vice versa for right after join.
+
+** FULL OUTER JOIN
+#+BEGIN_SRC sql
+SELECT FROM table1 FULL JOIN table2 ON CONDITION
+#+END_SRC
+Can be done using union of LEFT AND RIGHT JOIN. Both entries from both tables may have NULL values.
+
+** NATURAL JOIN
+#+BEGIN_SRC sql
+SELECT _ FROM table1 NATURAL JOIN table2
+#+END_SRC
+Natural join  joins based on the identitically named columns in both tables, provided they have the same data type. Note that they dont have an ON clause. The values of the attributes must also be the same.
+
+The result of the natural join is the *universal relation*.
+
+** Views
+Views are a virtual relation table used only for querying.
+
+#+BEGIN_SRC sql
+CREATE VIEW view_name (attr, attr, ...) AS <an sqlquery>
+#+END_SRC
+
+Interesting use cases include for example, creating views with access to certain attributes based on geographical location.
+
+** Analysis of Candidate Keys
+First cartesian the tables together.
+
+For the row to be distinct, then all the primary keys from the subtables must be there, ie cannot be removed. Also, the WHERE <condition> helps us to remove duplicate columns.
+
+** Universal Relation
+Natural join all the tables in the database to get the relational set of the entire database.
