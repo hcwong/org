@@ -237,3 +237,90 @@ Letting compilers decompose and schedule.
 But dependence analysis is hard with pointer based computation or indirect addressing, execution time of calls or loops with unknown bounds also hard.
 *** FP languages
 Benefit is that the functions are already independent, but we have to figure out when at which function level we want to extract parallelism.
+* Lecture 4
+** Models of Parallelism
+*** Fork-Join
+T creates child tasks and then waits for the tasks using a join call
+*** Parallel Begin Parallel End
+Programmer specifies a sequence of statement to be executed by a set of processors in parallel.
+The statements following the parbegin-parend construct are only executed after threads finished their work
+*** SIMD
+Single instructions are executed *synchronously* by the different threads on different data.
+*** SPMD
+ Same program executed on different processes on different data. All threads have equal rights and work asynchronously with each other.
+*** Master-Slave
+ A single program master controls the execution of the program and assigns work to slave threads.
+*** Client Server
+ Multiple Program Multiple Data model
+
+ The client sends requests, which are tasks for the server to compute, and to return the result to the client.
+*** Task Pool
+ Data structure where threads can access to retrieve tasks for execution.
+
+ Number of threads are fixed. This is an improvement over client server as we won't spawn too many threads now and overhead of thread creation is independent of the problem size.
+
+ Access to the task pool must be synchronized to avoid race conditions.
+*** Producer Consumer
+ Producer produces data which is consumed by the consumer.
+*** Pipelining
+Data ios partitioned into a stream that flows through each of the pipeline tasks.
+
+** Performance
+Two Goals: Users care about *reduced response time* but computer managers want *high throughput*
+
+*** User CPU Time
+User CPU Time of Program = Total Number of CPU cycles for instruction * Time per cycle - (1)
+
+But instructions have *diff execution times* (from CS2100). So the total number of CPU cycles is the number of instructions of a type * the average number of CPU cycles for a type of instruction.
+
+*** Refinement with Mem Acesss Time
+We also have to add in the additional clock cycles due to memory access or if access the larger caches.
+
+It can further be extended by adding in readwrite miss rate,
+giving \(Time_{user}(A) = (N{instr}(A) * CPI(A) + N_{rw_op}(A) * RW_{miss}(A) * N_{miss_cycles}) * Time_{cycle} \)
+
+*** Average Memory Access Time
+Mem access time = (read hit time) + Percentage of Read Miss * (read miss time)
+
+Note that the miss time is on top of the read hit time.
+
+*** Throughput - Million Instructions per second
+Two ways to calculate.
+1. Number of Instructions / user cpu time / 10^6
+2. Clock Frequency / CPI(A) / 10^6
+
+** Speedup
+\(T_p(n)\) where p stands for number of processors, T is the end time - start time of the program on all procesors.
+
+Cost of parallel program with input size n on p processors is \(C_p(n) = p * T_p(n)\)
+
+A parallel program is *cost optimal* if it executes the same number of operations as the fastest sequential program.
+
+\(S_p(n) = T_{best_seq}(n) / T_p(n)\). In practice, superlinear speedup can occur if problem fits entirely in cache.
+
+But, fastest speedup is hard to know. So we just use \(E_p(n) = T_*(n) / p / T_p(n)\). Ideally, \(S_p(n) = p\)
+
+** Scalability
+Interaction behind size of problem and size of parallel comp. Ideally, we want to match the problem size and the size of the machine (eg large problem and small machine leads to thrashing.)
+
+*** Scaling Constraints
+Application-oriented scaling problems
+Resource-oriented scaling properties:
+1. Problem constraint scaling - Use parallel computer to solve faster
+2. Time problem scaling - Complete more work in fixed time
+3. Memory constrained scaling - Run largest problem w/o overflowing main mem.
+
+** Amdahl's Law
+Speedup of the parallel execution is limited by the fraction (f) of the algorithm that cannot be parallelized.
+
+However, for in many problems, /(f)/ is not a constant and speedup can reach p, the number of processors.
+
+** Gustafson's Law
+Certain applications have execution time as main constraint => /f/ decreases as problem size increases.
+
+We can put in more resources to get the same execution time as sequential so that the speedup can tend to p.
+
+** Performance Analysis
+1. Set the Goals: Throughout, response time?
+2. Start with simplest parallel solution
+3. Check possible bottlenecks: Instruction, Memory, Locality of Data access, sync overhead
