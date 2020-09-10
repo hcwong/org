@@ -265,12 +265,74 @@ There is also a *Foldable* type class that also has a whole lotta other fold sty
 map : (a -> b) -> [a] -> b
 
 ** Functor
-A function which takes a function like fmap and returns another function.
+Functor is anything that is mappable.
 #+BEGIN_SRC haskell
-class Function f where
+class Functor f where
   fmap:: (a -> b) -> f a -> f b
 #+END_SRC
 Map is an the list implementation of fmap
 
+
 ** Composition
-Composition is an instance of functor fmap.
+Function composition is an instance of functor fmap.
+* Lecture 5
+** List Comprehension
+#+BEGIN_SRC haskell
+[f x | x <- ys] -- this is a map
+[x | x <- ys, x < 5 ] -- this is a filter
+[x | x <- xs, y <- ys] -- this is a concatmap pattern
+#+END_SRC
+** Arrays
+Regarded as functions from indices to values, but for efficient retrieval it is contigous and bounded.
+
+Can also build an array from an association list.
+#+BEGIN_SRC haskell
+squares = array (1, 100) [i | i <- [1..100]]
+#+END_SRC
+Since haskell is purely functional, the array must be built in one step (monolithic).
+
+*** Accumulation
+#+BEGIN_SRC haskell
+accumArray :: (Ix a) => (b->c->b) -> b -> (a,a) -> [Assoc a c] -> Array a b
+--                      accum fn init-val bounds  elements
+#+END_SRC
+
+** Semi-Groups
+#+BEGIN_SRC haskell
+class SemiGroup a where
+  op :: a -> a -> a
+class SemiGroup a => Monoid a where
+  unit :: a
+#+END_SRC
+
+There are two properties of monoids:
+#+BEGIN_SRC haskell
+unit `op` x = x `op` unit = x  -- unit is both left and right, its not meant to represent commutativity.
+(x `op` y) `op` z = x `op` (y `op` z)
+#+END_SRC
+
+Unit is just something that gives back the operator when together with the operator. Note that the properties are not checked by Haskell => So it is up to the user to ensure that the two properties all hold.
+
+** Monads
+An expr is referentially transparent if it can be replaced with corresponding value without chaging the program's behavior.
+
+Monads are referentially transparent, but not imperative programming with side effects.
+
+*** Context
+Values can be associated with a context, like IO, Maybe type. Once we have a context, we cannot directly apply a function. So the solution is to use the Functor and to define the /fmap/.
+
+*** Applicatives
+#+BEGIN_SRC haskell
+class Functor f => Applicative (f:: *->*) where
+  <*> :: f (a->b) -> f a -> f b
+#+END_SRC
+However, functions can also be dumped into a context. Applicatives /<*>/ are used in this scenario, because fmap does not apply to functions, only to a value inside a context (See its type defn).
+#+BEGIN_SRC haskell
+fmap :: (a->b) -> f a -> f b -- type of a is value not a function
+#+END_SRC
+
+*** Monads actual
+#+BEGIN_SRC haskell
+class Monad m where
+  (>>=) ::  m a -> (a -> m b) -> m b
+#+END_SRC
