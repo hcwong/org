@@ -225,3 +225,87 @@ Use unique physical characteristics of a person. During enrollment, reference te
 However, this is not always 100% correct (See false match rate vs false non match rate).
 
 The threshold for FMR and FNMR can be adjusted. Other errors include failure to enroll or failure to capture (during verification).
+
+** n-factor authentication
+Require at least 2 different factors for authentication.
+
+SMS OTP is actually not too secure because of interception of cellular network's channel.
+
+* Lecture 5
+** Asymmetric key scheme
+Uses two keys: public key is for encryption, private key for decryption.
+
+But now we have to distinguish the sets clearly: \(K_e, K_d, M, C\) where \(K_e\)  \(K_d\) are the public and private key sets respectively.
+
+The encryption scheme is also now a one-way function. Encryption can be done using public key only, but decryption is not feasible without private key.
+This function E() is called trapdoor function, and the trapdoor is \(k_d\).
+
+Also an added requirement that it is difficult to derive private key from pub key.
+
+*** Advantage
+We have less keys to manage on a while, as with secret key, both parties need same set of secret key. But with asymmetric, only public key need to be exchanged.
+
+** RSA
+Note that classroom RSA is the one being introduced.
+*** Setup
+1. Choose two large primes p q and n = p.q
+2. Owner then randomly chooses encryption exponent and then derive decyption exponent.
+  
+#+NAME: RSA
+#+ATTR_ORG: :width 300
+[[file:images/cs2107_l5_1.png]]
+
+RSA is also has a special property in which we can use decryption key to encrypt and then encryption key to decrypt.
+
+*** Security
+Difficulty of getting private key from public key is as hard as factorizing n.
+
+Similar to symmetric key encryption, some form of IV is required so that encryption gets randomized.
+
+Factorization can also be efficiently done by quantum computer.
+
+** Insecure RSA
+*** Using RSA as symmetric key
+Issue 1 is that RSA is significantly slower than AES, though this can be mitigated somwhat if we use AES to encryypt file and then RSA to encrypt the AES key.
+
+Issue 2 is that ECB with RSA could also leak more information.
+
+Issue 3 is that RSA is not necessarily more secure than AES. Because it is not known if problem of getting plain text from cipher text and public key is as hard as factorization.
+
+** Unkeyed hash
+A function that takes an arbitrarily long message as input and outputs a fixed-size digest (smaller than the message).
+
+Examples of the unkeyed hash function include the SHA-X variants.
+
+Requirements:
+1. Efficient
+2. Given a digest, hard to find the message (one way)
+3. Collision resistance => hard to find 2 messages with the same digest.
+
+Unkeyed hash can be used to determine data integrity. If the digest of the authentic source is obtained via *secure channel*, then we can check if the digest is the same.
+Authenticity cannot be compared as the original digest could have been spoofed.
+
+** Keyed hash
+A function that takes in secret key to produced fixed size Message Authentication Code (MAC).
+Now you need the key to produce the exact same message. Popular models include CBC-MAC and HMAC.
+
+MAC can be used to determine authenticity. If the key is known to both parties, then we can determine whether the MACs of the two files are the same.
+
+** Digital Signature
+Is the asymmetric version of MAC. Signature provides both authenticity and non-repudiation. The private key is used to encrypt in the hash and the public key is used on the client side to generate the digest.
+
+The algorithm sign() is used to mean that encryption with private key and verify() is the decryption with the private key.
+
+Non-repudiation means that the signer cannot deny that the file came from her. With digital signature, non repudiation is clear because only one person knows the private key.
+
+#+NAME: Signaturee Process
+#+ATTR_ORG: :width 400
+[[file:images/cs2107_l5_2.png]]
+
+** Attacks on hash
+*** Hash and Birthday Attack
+Instead of brute forcing the search space, we do a comparison between each pair to see if the result is the same.
+
+Supposed we have M messages, and all messages are tagged with a random value from 1..T.
+If M > \(1.17 . T^{0.5}\), then the \(P_{collision}\) > 0.5.
+Hence, the recommendation of digest is at least double of key length.
