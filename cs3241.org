@@ -343,3 +343,76 @@ Model-view matrix is use to transform objects to worldspace and position camera.
 
 *** Matrix stacks
 Allow us to save transformation matrices for use later.
+* Lecture 5
+** Planar Geometric Projections
+Standard projections project onto a plane.
+
+Projectors are line that converge at a center of projection or are parallel. Such projections preserve lines but not angles.
+Non planar projection surfaces are needed for apps like map cosntruction.
+
+*** Perspective Projection
+Projectors converge at center of projection and objects further will be projected smaller.
+
+*** Computer Viewing
+There are two aspects of the viewing process: Positioning the camera (set model-view-matrix) and selecting the lens (set projection matrix)
+
+*** Local / Modeling / Object space and World space
+Each object model has its own local coordinate frame for conveience. (eg sphere is centered at the origin)
+
+Modelling transformation converts the object coordinates to the common coordinate frame (world space) for all objects.
+
+Lights and camera pose are defined in the world space.
+
+** OpenGL Camera
+Camera has the camera coordinate frame looking in the negative z direction, so that the projection is in the positive z direction.
+All projections are w.r.t the camera frame.
+
+Initially the world and the camera frames are the same. To specify camera pose, we need to specify camera coordinate frame wrt world coordinate frame.
+
+OpenGL also specifies a default view volume that is a cube with sides of length 2 centered at origin.
+
+** Specifying Camera Pose
+By default, camera frame coincides with the world frame. But we need to specify the camera frame wrt the world frame to put camera at other location.
+
+#+BEGIN_SRC cpp
+gluLookAt( eyex, eyey, eyez, atx, aty, atz, upx, upy, upz )
+#+END_SRC
+
+eye determines the location of the camera eye, at determines where it is looking at. up helps to control the rotation of the view direction. up need not be a worldspace vector parallel to the y axis. It just needs to be vector in a plane of the view vector and the camera y axis vector.
+
+#+NAME: gluLookAt
+#+ATTR_ORG: :width 400
+[[file:images/cs3241_l5_1.png]]
+
+From these vectors, we can derive the camera axes. Internally, it generates a (view) transformation matrix to express all points in the world frame wrt the camera frame.
+The view transformation matrix is normally the last transformation in the model-view matrix.
+#+NAME: Deriving axes
+#+ATTR_ORG: :width 400
+[[file:images/cs3241_l5_2.png]]
+
+*** View Transformation
+Consist of translation first, then rotation. Translation T moves the camera position to world origin and then rotate with R.
+
+\(M_{view} = R . T\)
+
+Multiply all points in world frame by \(M_{view}\) to express them in terms of camera frame.
+
+** Projections
+After modelview matrix, vertex multiplied by projection matrix.
+
+Projection matrix is a 4x4 matrix that defines type of projection. Projection matrix can be specified first by defining a view volume in the camera frame.
+
+Projection matrix is then computed that it maps points in the view volume to a 2x2x2 cube called *canonical view volume*.
+Also known as *normalized device coordinates (NDC)*. NDC is used to simplify the pipeline, as the view volume may always be in different shapes.
+
+It preserves depth order (z coordinate) and preserve lines and NDC is in turn mapped to viewport (viewport transformation).
+
+** Orthographic Projection
+glOrtho function generates a matrix that linearly maps view volume to canonical view volume, where
+1. (left, bottom, -near) is mapped to (-1, -1, -1) and (right, top, -far) is mapped to (1, 1,  1).
+
+** Viewport transformtation
+Can view the NDC as being behind the viewport. We then scale the x axis and then squash it onto the viewport.
+
+** OpenGL Perspective Projection
+/glFrustrum()/ generates a matrix that maps the view frustrum to the canonical view volume. The function also allows for a non symmetric view volume.
