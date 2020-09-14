@@ -324,3 +324,80 @@ We can put in more resources to get the same execution time as sequential so tha
 1. Set the Goals: Throughout, response time?
 2. Start with simplest parallel solution
 3. Check possible bottlenecks: Instruction, Memory, Locality of Data access, sync overhead
+* Lecture 6
+General Purpose GPU(GPGPUs) are used noawadays, like CUDA and OpenCL.
+** GPU Architecture
+Multiple Streaming Processors (SMs) with their own memory and L1 cache. They consist of multiple compute cores.
+
+The compute capabilities differ across the versions from 1x to 7x. We focus on Volta (7.0, 7.2) and Turing (7.5).
+
+** CUDA Programming
+Stands for compute unified device architecture.
+
+It comes with a general purpose programming model, that is a simple extension to standard C; it is however not a graphics API like openGL. It focuses more on how you write your program.
+
+CUDA works on Nvidia GPUs and comes with hardware architecture, programming model and programming interface.
+
+- Parallel portions execute on device(GPU) as kernels(functions that run on device).
+- CUDA threads are extremely lightweight => good for context switching
+
+A CUDA kernel is executed by array of threads (thread block) that execute same code (SPMD). Each thread that has ID to compute mem addr and make control decisions.
+The threads execute in lock step (maximum of 32, determined by WARP scheduler). However, if there is branching, this no longer holds and different branch flows will execute sequentially.
+
+The threads are also not completely independent and they can share memory. This cooperation includes shared mem, atomic operations and synchronization is available to threads of the same block.
+A kernel is executed by a grid of thread blocks. The thread ID determines what data the thread works on.
+
+*** Execution Model Mapping To Architecture
+Kernels are launched in grids and can execute concurrently.
+
+A block usually executes on one SM, and does not migrate. Also possible for serveral blocks to reside concurrently on SM.
+*** Thread Execution Mapping to Architecture
+SIMT execution model.
+
+Multiprocessor creates and executes threads in SIMT warps => the threads in it start together at same prog addr.
+Most of the time, a block is split into warps the same way.
+
+/Blocks vs Warps: Blocks is a conceptual unit of work, but warp is the hardware group/
+
+** CUDA Memory Model
+#+ATTR_ORG: :width 400
+[[file:images/cs3210_l6_1.png]]
+
+Local memory is very slow, so we try to store info in thread registers. Block shared mem has decent speed, but global memory has relatively slow access times.
+
+Global memory is able to communicate with the host (CPU), though transferring the data has overhead.
+
+Shared memory should be used as much as possible due to its higher bandwidth and lower latency.
+The job of a programmer is to ensure that each thread of the block access a different part of the shared memory (banks), as differnet banks can be accessed simultaenously. Avoid bank conflicts!
+
+For coalesced access to global memory, simultaenous accesses to global memory in a warp can be coalesced into a single transaction of 32, 64, of 128 bytes.
+Note that the memory access need not be contigous, they just need to be in the same segment.
+
+** CUDA Software Development
+The CUDA C runtime is a minimal set of extensions to C Language and requires a runtime API.
+
+The CUDA driver API loads compiled kernels, inspect parameters and to launch them (not the same as runtime API).
+
+#+ATTR_ORG: :width 400
+[[file:images/cs3210_l6_2.png]]
+
+Need to use NVCC, a compiler driver for CUDA => produces C code for CPU and PTX.
+
+** CUDA Programming
+No static variables, variable nummber of args and no recursion.
+
+The function qualifiers determine where the function runs (host vs device vs global, or host and device together).
+
+CUDA also allows us to delegate memory placement using /__managed__/, so we can use the unified memory model w/o data transfer.
+
+/void __syncthreads();/ also helps to synchronize all threads in a block => do after each shared mem operation.
+
+** Optimizing CUDA Programs
+1. Maximize Parallel Execution
+   - Expose as much data parallelism => threads are cheap!
+   - More thread blocks than multiprocessors
+   - Threads per block should be multiple of warp size and 64 to avoid mem bank conflict.
+2. Optimize mem usage to achieve max bandwidth
+   - Minimize Data Transfer
+3. Optimize instruction usage, avoid stuff like branching.
+   - Minimize divergent warps caused by control flow instructions.

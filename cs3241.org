@@ -378,7 +378,7 @@ By default, camera frame coincides with the world frame. But we need to specify 
 gluLookAt( eyex, eyey, eyez, atx, aty, atz, upx, upy, upz )
 #+END_SRC
 
-eye determines the location of the camera eye, at determines where it is looking at. up helps to control the rotation of the view direction. up need not be a worldspace vector parallel to the y axis. It just needs to be vector in a plane of the view vector and the camera y axis vector.
+eye determines the location of the camera eye, at determines where it is looking at. up helps to control the rotation of the view direction.
 
 #+NAME: gluLookAt
 #+ATTR_ORG: :width 400
