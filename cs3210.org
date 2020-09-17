@@ -290,7 +290,7 @@ Two ways to calculate.
 2. Clock Frequency / CPI(A) / 10^6
 
 ** Speedup
-\(T_p(n)\) where p stands for number of processors, T is the end time - start time of the program on all procesors.
+\(T_p(n)\) where p stands for number of processors, T is the end time - start time of the program on all processors.
 
 Cost of parallel program with input size n on p processors is \(C_p(n) = p * T_p(n)\)
 
@@ -313,10 +313,14 @@ Resource-oriented scaling properties:
 ** Amdahl's Law
 Speedup of the parallel execution is limited by the fraction (f) of the algorithm that cannot be parallelized.
 
+\(S_p(n) \leq 1/f\)
+
 However, for in many problems, /(f)/ is not a constant and speedup can reach p, the number of processors.
 
 ** Gustafson's Law
 Certain applications have execution time as main constraint => /f/ decreases as problem size increases.
+
+\(S_p(n) \leq p\)
 
 We can put in more resources to get the same execution time as sequential so that the speedup can tend to p.
 

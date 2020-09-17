@@ -36,7 +36,6 @@ Also known as existential dependency
 This is applied to an attribute, and all values of this attribute now depend on the existence of another value on a different row on the same table or different table
 
 Acts as a link between the 2 tables by referencing primary key of another table.
-Foreign keys used to accept null values, but deprecated as of later SQL versions.
 
 Insertion of Foreign Keys looks like that - If anyone of the value is /NULL/, insert. Else if it exist, also can insert into the referencing table. Must also reference primary keys.
 
@@ -232,7 +231,7 @@ Can UNION or UNION ALL select queries. Difference is that UNION ALL allows dupli
 Like UNION, INTERSECT ALL allows duplicate values.
 
 ** EXCEPT
-EXCEPT takes the distinct rows of one query (the first one) nad returns the row that do not exist in a second result set. EXCEPT all leaves the rows as they are.
+EXCEPT takes the distinct rows of one query (the first one) and returns the row that do not exist in a second result set. EXCEPT all leaves the rows as they are.
 
 ** INNER JOIN
 #+BEGIN_SRC sql
@@ -276,3 +275,73 @@ For the row to be distinct, then all the primary keys from the subtables must be
 
 ** Universal Relation
 Natural join all the tables in the database to get the relational set of the entire database.
+* Lecture 6
+** Aggregate Functions
+1. Min
+2. Max
+3. Sum
+4. Count(A/*)
+5. Avg(A)
+6. Avg(Distinct A)
+7. Sum(Distinct A)
+8. Count(Distinct A)
+
+Group By allows for the query to be grouped for certain rows instead of being applied across the whole column.
+
+*** Grouping Restrictions
+For each column A in Relation R that appears in select, one of the following conditions must hold:
+1. Col A appears in Group By Clause
+2. Col A appears in aggregated expression in select
+The candidate key of R must appear in the Group By Clause => every row is a single group.
+
+NOTE: This may only hold true for Postgres.
+
+** Sorting
+Ordering syntax
+#+BEGIN_SRC sql
+SELECT _ FROM _ WHERE _ ORDER BY col OFFSET _ LIMIT _
+#+END_SRC
+
+We can also mix case statements with sort statements
+#+BEGIN_SRC sql
+SELECT * FROM table ORDER BY CASE WHEN col = val THEN col2 END DESC, CASE WHEN col = val2 THEN col3 END ASC;
+#+END_SRC
+
+** Order of Operation
+From > Where > Group By > Having > Select > Order By > Limit > Offset
+
+Note that HAVING is used to exclude rows after Grouping but WHERE is used to filter rows before grouping.
+
+** Nested Subqueries
+#+BEGIN_SRC sql
+SELECT scalar_subquery FROM query WHERE scalar_subquery
+#+END_SRC
+
+Scalar subqueries is a subquery than selects only one column and returns only one row. The EXISTS keyword can be used to check if a scalar subquery result is empty because it checks if a given value exist in the subquery result.
+
+We can also use the WITH statement to alias
+#+BEGIN_SRC sql
+WITH tabl1 as Q1, tbl2 AS q2 Q
+#+END_SRC
+
+** Universal Quantifiation
+Recapping universal quantification, it usually reads something like this: for all x in a domain, if P(x) => Q(x).
+Note that this statement can be rewritten as: for all x in domain, P(x) is False or Q(x) is True.
+
+This in turn can be rewritten as: there does not exist x s.t the following is not true - P is False or Q(x) is True.
+Or also there does not exist x s.t P is True and Q(x) is False (via De Morgan's).
+
+The example from the slides is "Find the names of all customers who like all the pizzas sold by Lorenzo Tavern"
+
+# To Review
+
+Here's the rough SQL format.
+#+BEGIN_SRC sql
+SELECT DISTINCT A_1
+FROM R_1
+WHERE NOT EXISTS (
+  SELECT A_2 FROM R_2 WHERE NOT EXISTS(
+    SELECT 1 FROM R_1 as R WHERE R.A_2 = R_2 A_2 AND R.A_1 = R_1.A_1
+  )
+)
+#+END_SRC

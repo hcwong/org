@@ -336,3 +336,65 @@ fmap :: (a->b) -> f a -> f b -- type of a is value not a function
 class Monad m where
   (>>=) ::  m a -> (a -> m b) -> m b
 #+END_SRC
+Note that we take in a monad, a function that returns a monad, and it in turn returns a monad. This also facilitates chaining.
+#+BEGIN_SRC haskell
+getLine >>= readFile >>= putStrLn
+
+-- do syntantic sugar
+foo = do
+  filename <- getLine
+  contents <- readFile filename
+  putStrLn contents
+
+-- also equivalent
+getLine >>= \filename -> (readFile filename -> \ contents -> putStrLn contents)
+#+END_SRC
+
+List comprehension is a form of do comprehension and do syntactic sugar.
+
+*** Other syntax
+#+BEGIN_SRC haskell
+class Monad m where
+  return :: a -> m a
+  >> :: (m a) -> (m b) -> m b -- ignores output of m a
+#+END_SRC
+
+
+*Laws of monad class*
+#+BEGIN_SRC haskell
+(return a) >>= k = k a
+m >>= return m
+(m >>= (\a -> (k a) >>= (\b -> h b))) =  m >>= \\a -> k a >>= \b -> h b
+#+END_SRC
+
+Note that we cannot extract the value from within the function as it is unsafe.
+
+*** Building Actions
+IO operations are just ordinary values that can be passed into data structures, combined using functions like foldr
+* Lecture 6
+** Monadic Parsing With Haskell
+*** Abstract Syntax Tree
+Used to represent code fragment as a data structure
+*** Context-Free Grammar
+1. A set of terminal symbols
+2. A set of non-terminal symbols
+3. A (non-terminal) start symbols
+4. A set of grammar rules of the form <nonterminal> ::= <sequence of terminals and non-terminals>
+*** Backus-Naur Form and Extended Backus-Naur form
+<integer> ::= <digit>:{<digit>}
+
+#+BEGIN_SRC
+EBNF for Haskell Fragment
+<expression> ::=
+  <lowercase-identifier>
+  | <constants>
+  | let <pattern> = <expr> in <expr>
+  | if <expr> then <expr> else <expr>
+  | \ {<pattern>}+ -> <expression>     -- + means more than one
+  | <expression> {<expression>}+
+#+END_SRC
+*** Regular Grammar
+Regular Grammar is a subset of CFG with different grammar rules:
+<nonterminal> ::= <terminal>|<nonterminal>}
+
+Regular grammars can be recognized by a finite state machine (and tail recursive methods).
