@@ -309,3 +309,45 @@ Instead of brute forcing the search space, we do a comparison between each pair 
 Supposed we have M messages, and all messages are tagged with a random value from 1..T.
 If M > \(1.17 . T^{0.5}\), then the \(P_{collision}\) > 0.5.
 Hence, the recommendation of digest is at least double of key length.
+** Encryption
+Encryption is not designed to provide integrity and authenticity - only designed to provide confidentiality.
+
+Cipher text is malleable if it is possible to modify a cipher text and cause a predictable change to the plaintext.
+
+* Lecture 4
+** Public Key Distribution
+If public key is distributed insecurely, then people can hijack it, send a fake public key to the person doing encrypting and then decode the response.
+
+#+NAME: Secure Channel Requirements
+#+ATTR_ORG: :width 400
+[[file:images/cs2107_l6_1.png]]
+
+*** Public Announcement
+Owner just broadcast public key.
+
+Limitation is that it we still have to trust the website.
+
+*** Publicly available directory
+We put public keys in a directory.
+
+Limitation is that we still have to trust the directory and what it says it is.
+
+*** PKI + Cert
+PKI is a standardized system that distributes public keys.
+
+PKI has two key components: Cert and Cert Authority.
+
+A CA issues and signs digital certs, it has a directory of pub keys and its own pub-private key pair. There are also strict operational requirements for a CA.
+
+A cert is a digital document that contains the identity of the owner, pub key, validity and signature at the minimum.
+Cert allows us to verify public keys without having to ping the directory server everytime which can become a bottleneck.
+However, we still need to verify the validity of the certificate. But we can have multiple online CRL distribution points.
+
+Distinguished Name is used identify and entity (issuer and subject names). It usually has a few attributes, including a common name.
+
+Summary: Cert is simply a document signed by a CA that specifies an identity, associated public key, window during which it is valid and signature of the CA.
+
+**** Responsibility of CA
+CA also needs to verify that the information is correct. This may involve some manual checking and especially for the extended validation SSL certificates (this involves some legal identity check).
+
+CA also checks Domain Validation, Organization Validation SSL certs before issuing cert.
