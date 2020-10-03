@@ -405,3 +405,83 @@ CUDA also allows us to delegate memory placement using /__managed__/, so we can 
    - Minimize Data Transfer
 3. Optimize instruction usage, avoid stuff like branching.
    - Minimize divergent warps caused by control flow instructions.
+
+* Lecture 7
+Cache Coherence
+
+** Shared Address Space Model
+- Tasks communicate by reading/writing to shared variables.
+- Ensure mutual locks, otherwise looks like uniprocessor programming
+- But requires hardware support to impl efficiently, so that any processor can load and store from any address.
+
+** Cache properties
+Cache size increase increases access time due to increased addressing complexity but reduces cache misses. Larger block size increases spatial locality cache hit, but now replacement is longer.
+
+** Write Policy
+Write through means write access is transferred immediately to main memory.
+
+Write back means write only performed in cache, and write is performed in main memory only when cache block is replaced. Write back also requires a dirty bit
+
+** Cache Coherence Problem
+Intuitively, reading value at any address should return the last value written at that address by any processor.
+
+*** Memory Coherence
+Program property does not imply write propagation, and neither is write propagation needed for write serialization.
+
+**** Property 1
+Program property: If one program writes y to x and no other program writes to x, the value of x should be y.
+**** Property 2
+Write Propagation property: If P1 writes to y to x and no other programs write to x, P2 should read y from x.
+**** Property 3
+Write Serialization property: Given the sequence V1 written to X by any processor, V2 write to X by any processor, processors can never read x as V2 followed by V1 (V1 was already overwritten).
+
+** Tracking Cache Line Sharing Status
+There are two types, snooping based and directory based.
+
+*** Snooping
+**** Bus Based Cache Coherence
+All processors can observe every bus transaction (write propagation)
+Bus transactions are visible to the processors in the same order (write serialization)
+
+Hence, cache controllers snoop on the bus and monitor the transactions and takes action if necessary.
+
+#+NAME: Bus
+#+ATTR_ORG: :width 400
+[[file:images/cs3210_l7_1.png]]
+
+However, CC now increases memory latency and lowers hit rate in cache. False sharing may also occur that when 2 processors write to different addresses but the addresses map to the same cache line.
+
+#+NAME: False sharing
+#+ATTR_ORG: :width 200
+[[file:images/cs3210_l7_2.png]]
+
+** Memory Consistency
+Coherence just ensures that each processor has consistent view of mem through local cache. Writes to an addr by a processor will eventually be observed, but does not specify when.
+
+Memory consistency ensures that constraints on the order in which memory operations can appear to execute for different memory locations (when the operations are seen by other processors).
+
+** Memory Operations on multiprocessors
+1. W->R: write to X must complete before subsqt read from Y, where X != Y.
+2. R->R: read from X must complete before read from Y.
+3. R->W: as above.
+4. W->W: as above.
+
+These operations are reordered to hide write latencies.
+
+** Sequential Consistency
+Only one memory operation at any one point in time (paraphrasing Lamport).
+
+Relaxed consistency occurs when we overlap memory access operations with other operations when they are independent if the data dependencies allow
+
+Dependencies if two operations access same memory location.
+1. R->W (WAR)
+2. W->W (WAW)
+3. W->R (RAW)
+
+Write-to-Read Program Order: Allow a read on Processor P to be reordered wrt to the previous write of the same processor while preserving data dependencies.
+
+TSO has no serialization. PC has no serialization and propagation.
+
+Write-to-Write Program order: Writes can bypass earlier writes in write buffer.
+
+PSO relax W->R order and relax W->W order.

@@ -16,9 +16,7 @@ This is commonly generalized as the *asset-threat-vulnerability-control model*.
 5. *Accountability*, such as the non repudiation of a prior agreement.
 
 ** Encryption
-Cryptology vs Cryptography - Study of codes vs study of techniques in securing comms in the presence of adversaries.
-
-Encrpytion is one of the primitives in cryptography.
+Cryptology vs Cryptography - Study of codes vs study of techniques in securing comms in the presence of adversaries. Encrpytion is one of the primitives in cryptography.
 
 #+CAPTION: Encryption process
 #+ATTR_ORG: :width 600
@@ -56,7 +54,7 @@ Lastly, the ciphertext only attack. This checks whether given only the cipher te
 Formula can be represented as \(G, E, D\) over \(K, M, C\) where G is the key generator, E encryption, D decryption, K the key set, M the plaintext set and C is the ciphertext set
 
 - Requirement: For all \(\forall m \in M\) and \(\forall k \in K\), \(D_k(E_k(x))\).
-- Effiency: G, E, D should run in polynomial time
+- Efficiency: G, E, D should run in polynomial time
 - Security: Attacker cannot recover secret key or plaintext
 
 *** Perfect Security
@@ -67,7 +65,7 @@ But for this to occur, key must be as long as plaintext => impractical
 *** Computational Security
 Okay if cipher leaks some info with tiny probability to attacker with bounded computational resources. Failure is considered negligible in practice.
 
-We measure the strength by the estimated number of bits in the key or equivalent exhaustive search => aim for 2^128 and above. For example, even though RSA has 2048 bits, it has exploits that make its search take arounf 2^112, so it is a 112 bit strength key.
+We measure the strength by the estimated number of bits in the key or equivalent exhaustive search => aim for 2^128 and above. For example, even though RSA has 2048 bits, it has exploits that make its search take around 2^112, so it is a 112 bit strength key.
 
 ** Modern Ciphers
 
@@ -89,7 +87,7 @@ Take into account all attacks, and no exploits should be faster than exhaustive 
 
 Given a secret key of smaller size, generate a sequence of same size as message, and then take sequence as key in one time pad.
 
-There are some constraints. Firstly, the key generator must generate a cryptographically secure psuedorandom sequence called the key stream. Cryptographically secure means that it must pass all efficient statistics test and be unpredictable. Psuedorandom means that iit should be indistinguishable from random set.
+There are some constraints. Firstly, the key generator must generate a cryptographically secure psuedorandom sequence called the key stream. Cryptographically secure means that it must pass all efficient statistics test and be unpredictable. Psuedorandom means that it should be indistinguishable from random set.
 
 The psuedorandom generator should map a seed space to an output space in a deterministic fashion. However, this is not good as same seed == same keystream (two key issue in one time pad).
 
@@ -255,7 +253,7 @@ Note that classroom RSA is the one being introduced.
 #+ATTR_ORG: :width 300
 [[file:images/cs2107_l5_1.png]]
 
-RSA is also has a special property in which we can use decryption key to encrypt and then encryption key to decrypt.
+**IMPORTANT:** RSA is also has a special property in which we can use decryption key to encrypt and then encryption key to decrypt.
 
 *** Security
 Difficulty of getting private key from public key is as hard as factorizing n.
@@ -314,7 +312,7 @@ Encryption is not designed to provide integrity and authenticity - only designed
 
 Cipher text is malleable if it is possible to modify a cipher text and cause a predictable change to the plaintext.
 
-* Lecture 4
+* Lecture 6
 ** Public Key Distribution
 If public key is distributed insecurely, then people can hijack it, send a fake public key to the person doing encrypting and then decode the response.
 

@@ -23,7 +23,7 @@
 putStrLn "Helloworld" -- String = IO() String to IO Monad
 #+END_SRC
 
-#+BEGIN_SRC ocaml
+#+BEGIN_SRC
 print_endline "HelloWorld" // String -> () the printing is a side effect
 #+END_SRC
 
@@ -116,7 +116,7 @@ Includes records and tuple types
 **** Record Type
 This is very similar to a C struct
 #+TITLE: Record
-#+BEGIN_SRC c
+#+BEGIN_SRC
 struct Record {
     int num,
     char name[],
@@ -147,7 +147,6 @@ Like an enum, it is also a special case of Algebraic type, because some enums ca
 
 **** Type Synonyms
 Type synonyms cannot be recursive in Haskell, unlike in C.
-
 **** Untyped Languages
 Essentially just sums different types togther, but without no constructor tags then there is no type safety that can be ensured at both compile and runtime.
 
@@ -398,3 +397,33 @@ Regular Grammar is a subset of CFG with different grammar rules:
 <nonterminal> ::= <terminal>|<nonterminal>}
 
 Regular grammars can be recognized by a finite state machine (and tail recursive methods).
+*** Syntax Analysis
+We can use Algebraic types like /data Token = | t0 blah | t1 blah |/ to help us divide stuff into Tokens and Expressions.
+*** Parsers
+A generic parser is expected to have the following type:
+#+BEGIN_SRC
+data Token = ...
+type Tokens = [Token]
+type Parser a  = Tokens -> (a, Tokens) ;; consumes the token to produce parse tree object of type A and the remaining tokens.
+#+END_SRC
+
+We can apply this logic to constant parsers, keyword parsers etc, and then look to combine them to create a more complete parser.
+
+*** Sequential Parsing
+#+BEGIN_SRC
+(~~) :: Monad SParsec => SParsec a -> SParsecb -> SParsec(a, b)
+#+END_SRC
+
+#+NAME: Generic Parsing
+#+ATTR_ORG: :width 400
+[[file:images/cs2104_l7_1.png]]
+
+We can also support other operators, ie to say stuff like allowing us to choose between a parser A and parser B via disjunction.
+
+*** Parser Mapping
+Map functions can be used to change the output of a parser via a map function.
+*** Parser Repetition
+Another form of repetition involves trying to repeat the same parser over and over again.
+
+** Arithmetic Grammar Rule
+Use EBNF to handle left associativity as left recursion and right recursion both have their issues.
