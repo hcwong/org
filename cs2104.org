@@ -427,3 +427,75 @@ Another form of repetition involves trying to repeat the same parser over and ov
 
 ** Arithmetic Grammar Rule
 Use EBNF to handle left associativity as left recursion and right recursion both have their issues.
+
+* Lecture 8
+** Prolog
+Prolog atoms are constants (starts with lower case). Variables start with upper-case or underscore. There is no typing.
+
+Terms are used to form tree-like data structures:
+#+BEGIN_SRC
+node(node(dog, nil)), leaf(cat)
+#+END_SRC
+
+We can also mix terms with nodes
+#+BEGIN_SRC
+node(2, Y)
+#+END_SRC
+
+Prolog specifies relations rather than functions. In functions, inputs and outputs are fixed, but for Prolog, they just try to relate the number of parameters.
+#+NAME: Relation vs Function
+#+ATTR_ORG: :width 400
+[[file:images/cs2104_l8_1.png]]
+
+*** Adding as a relation
+#+BEGIN_SRC
+add(5, 4, R) adding
+add(5, Y, 9) subtracting
+add(5, 4, 9) checking
+add(X, Y, 9) enumerating
+#+END_SRC
+
+*** Derived Facts via Horn Clauses
+Left hand side is a single relation that is implied by the right hand side.
+Right hand side is usually the stronger condition.
+#+BEGIN_SRC
+pred(..) :- pred1(..), pred2(..)...
+
+pred1(...)&&pred2(...)... -> pred(...)
+
+parent(X,Y) :- father(X,Y); mother(X,Y) -- ; means disjunction
+#+END_SRC
+
+Horn clauses may be recursive, but be careful with left recursion due to DFS search procedure.
+
+*** List
+[1,2,3,4] is a list.
+
+In order to break into head and tail, we can use either
+1. /.(H,T)/
+2. /[H|T]/
+
+Appending can be done using the following syntax
+#+BEGIN_SRC
+append([], Y, Y)
+append([X|Xs], Y, [X|Rs])
+#+END_SRC
+
+*** Unification
+Unification fundamentally denotes equality, or can RHS match LHS.
+
+Unification /t1=t2/ may contains variables. The system computes a substitution such that the two terms are now equal. Once the variable is bound, the value cannot be changed (single assignment property).
+
+*** Resolution
+Resolution - the process of answering a query.
+
+Pattern-matching is a special case of unification. Resolution occurs by renaming all the variables in a row multiple times.
+
+*** Arithmetic
+Arithmetic expression is evaluated by the is-operator.
+
+#+BEGIN_SRC
+X is 3+4 -- True
+7 is 3+4 -- True
+7 is X+4 -- False, because RHS input is not known
+#+END_SRC
