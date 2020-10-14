@@ -499,3 +499,47 @@ X is 3+4 -- True
 7 is 3+4 -- True
 7 is X+4 -- False, because RHS input is not known
 #+END_SRC
+
+*** Selection
+#+BEGIN_SRC
+sel (X, [X|_]).  -- means false
+sel (X, [_|T]) :- sel (X,T) -- this recursively searches the tail until found
+#+END_SRC
+
+*** Negation and Cut operator
+In Prolog, whatever that cannot be proven is assumed to be False. This is known as the closed-world assumption.
+
+#+BEGIN_SRC
+remDup([], [])
+remDup([H|T], R) :- sel(H,T), !, remDup(T, R)
+remDup([H|T], [H|R]) :- remDup(T, R)
+#+END_SRC
+This means that if /sel(H,T)/ succeed, do not backtrack. If it fails, backtrack to try 3rd clause. Basically now it is an if then else condition.
+
+*** Impure Prolog
+- atom(X) succeeds if X is bound to atom
+- var(X) succeeds if free variable
+- integer(X) succeeds if bound to integer
+- write(X) output binding of X
+
+Impure because for example, atom is dependent on when it is called on X, before it is bound to atom or after.
+
+*** Finite Domain Constraints
+#+BEGIN_SRC
+X #> 3 retuns X in 4..sup
+
+cfact(0, 1).
+cfact(N, R) :- N#>0, M #= N-1, R #= N*R1, cfact(M,R1)
+#+END_SRC
+
+Runtime for constraint solvers can be very long though, for obvious reasons.
+
+* Lecture 9 :OCaml:
+#+NAME: Recap
+#+ATTR_ORG: :width 400
+[[file:images/cs2104_l9_1.png]]
+
+Recall: OCaml uses strict evaluation because of its imperative features.
+If you want to have lazy evaluation, OCaml provides a /Lazy.t/ library.
+
+Also, note that type variables are written as /`a/ in OCaml.

@@ -349,3 +349,58 @@ Summary: Cert is simply a document signed by a CA that specifies an identity, as
 CA also needs to verify that the information is correct. This may involve some manual checking and especially for the extended validation SSL certificates (this involves some legal identity check).
 
 CA also checks Domain Validation, Organization Validation SSL certs before issuing cert.
+
+**** Certification Chain
+A list of certs starting with an end-entity cert followed by one or more CA certificates. The last cert is the root CA's, known as trust anchor.
+
+For each cert, the issuer matches the subject of the next cert in the list and is signed by the private key of the next cert in the list.
+**** Cert Revocation
+Non expired certs can be revoked for different versions, so we have to check if non expired certs are valid. We can either do a certificate revocation list (CRL) or online cert status protocol (OPSP) to do the revocation/validation.
+
+However, OCSP comes at the cost of privacy as the OCSP responder knows what certs you're valuidating, and sometimes there is no reply, which some browsers will take as permission to proceed (soft-fail validation).
+
+To solve this, we can either do OCSP stapling or make it part of TLS handshake, at the cost of increased network cost.
+
+*** CA Weaknesses
+- Rogue CA
+- Weak Browser trust model
+- MITM by rogue CA
+- Null Byte Attack
+- Social Engineering and typosquatting
+
+* Lecture 8
+** Strong Authentication
+If shared key, first encrypt a random m, then send it to the other party to decrypt and check the response.
+
+If PKC, then Bob can choose random number r for Alice to sign using private key, then send signature with Alice cert. Then Bob can check if public key matches the signature.
+
+The random m/r is the cryptographic nonce.
+
+But this may not be sufficient if the session can be interrupted. For example, after the strong authentication, Mallory could interrupt and impersonate Alice.
+
+** Unauthenticated Key Exchange
+The first method is to use PKC based key exchange by generating a public/private key pair to generate a session key.
+
+The second is the Diffie-Hellman Key Exchange.
+[[file:images/cs2107_l8_1.png]]
+
+However, there is no entity authentication so it is still vulnerable to MITM.
+** Authenticated Key Exchange
+Unilateral Authentication using a signature is also possible.
+[[file:images/cs2107_l8_2.png]]
+
+For mutual authentication, both parties must know a way to know each other's public key.
+
+** Secure Communication Channel Problem
+Confidentiality is protected using encryption using k as key.
+Authenticity is protected by MAC using t as key.
+
+** TLS
+1. Ciphers Negotiation
+2. Authenticated Key Exchange
+3. Symmetric key based secure comms
+4. Renegotiation if necessary.
+
+[[file:images/cs2107_l8_3.png]]
+
+Protocol is just a set of rules for exchanging information, and is described as a steps of actions to be carried by the entity along with the data to be transmitted
