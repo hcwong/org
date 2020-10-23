@@ -543,3 +543,60 @@ Recall: OCaml uses strict evaluation because of its imperative features.
 If you want to have lazy evaluation, OCaml provides a /Lazy.t/ library.
 
 Also, note that type variables are written as /`a/ in OCaml.
+
+** When to use Imperative
+Certain high performance considerations and because in general, we want to model the real world.
+
+For example, we do not want to actually store a database as an immutable object
+
+** Mutable Reference
+#+BEGIN_SRC
+let ptr = ref 10;;
+
+ptr := !ptr + 1;;
+#+END_SRC
+
+OCaml also supports mutable records
+#+BEGIN_SRC
+type (`a, `b) pair = {mutable first :`a; second: `b};;
+p1.first <- p1.first + 1;;
+#+END_SRC
+
+In fact, each ref type is implemented as a record with one field, so ref type is just a syntactic sugar.
+
+However, mutable field types must not be polymorphic (its weak polymorphic to be specific). this is so that update and retrieval remains consistent => eg turn a list into list of strings midway through the program, this will create a runtime error.
+What this means is that at compile time, the type isnt exactly set but once the variable is instantiated it now has a type, and this type will be enforced.
+
+** Loops
+OCaml supports both for loops and while loops. However, the difference between the while loop and the for loop is that
+the for loop does not have control over its iterating condition.
+However, these loops are also syntactic sugar for recursive functions with a referential index.
+
+For loops also have /to/ and /downto/ syntax for iterating up and down respectively.
+
+** List iterator
+#+BEGIN_SRC
+List.iter : ('a -> unit) -> 'a list -> unit
+#+END_SRC
+
+** Sequences
+Sequences of the form /e1;e2;e3;.../ are executed for their effects.
+
+However, we want to check if the effects were successfully applied.
+#+BEGIN_SRC
+let () = e1 in
+let () = e2 in
+...
+#+END_SRC
+Using the let statement allows us to use the type checker by utilizing the void value.
+
+Also note that evaluation order of arguments in Haskell is implementation dependent.
+
+** Mutable Modules
+These are libraries that implement mutable data structures. Currently only records are mutable.
+
+The first is the array. Array size cannot be changed, but otherwise we can do our usual update operations.
+
+For strings, we can modify a character of the string.
+
+Hashtable behaves like a dictionary and it can automatically resize itself.

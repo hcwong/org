@@ -404,3 +404,112 @@ Authenticity is protected by MAC using t as key.
 [[file:images/cs2107_l8_3.png]]
 
 Protocol is just a set of rules for exchanging information, and is described as a steps of actions to be carried by the entity along with the data to be transmitted
+
+* Lecture 9
+** Authenticated Encryption
+*** E&M
+Encrypt and Mac, the sender computes cipher text and tag separately, and sends them both.
+*** Mac then Encrypt
+Get the MAC, then concatenate it to the plaintext to form single cipher text
+*** Encrypt then Mac
+First we compute cipher text then pass cipher text and the MAC key into the hash function to form the MAC. This benefit of this is that if the MAC is wrong, we don't have to perform decryption.
+*** Authenticated Cipher
+Returns an authentication tag along with the ciphertext.
+** Network Security
+Layer-N protocol is built on top of a virtual connection of the layer below.
+[[file:images/cs2107_l9_1.png]]
+
+However, the system is vulnerable to modification, fabrication, interruption and interception. For example, attacker at any layer can modify data and the header, and do things like spoof source ip address.
+
+** Name Resolution and Attacks
+DNS maps domain name to IP address and ARP associates IP address to physical address.
+
+For example, an attacker at the physical layer could perhaps send a false response with a fake ip address when someone is calling a DNS server.
+** Denial of Service
+[[file:images/cs2107_l9_2.png]]
+
+*** Attack Types
+Local attacks are easily tracked.
+
+Sending Malformed attack remotely does not usually work on updated OSes.
+Attacker may also amplify small traffic to obtain large traffic - Like in the ICMP flood attack.
+
+** DDOS
+Distributed, so attacker might use something like a botnet to attack. Attacker usually has a command and control mechanism to control the attack. Covert channels are usually used by a botnet.
+
+** Useful Tools
+- Wireshark for capturing stuff a the link layer
+- Nmap for scanning for open ports on hosts in a network
+
+** Firewall
+Need a way to control the flow of traffic between untrusted public internet and trusted internal network.
+
+DMZ is a small sub-network that exposes org's external service to (untrusted) internet
+
+Sit at the border to control egress and ingress traffic. The firewall table is processed a top down manner and the first matching rule is taken.
+
+*** Types of firewalls
+- Filter packet based on info in packet header
+- Stateful inspection: Maintains a state table of active connection and filters based on connection state
+- Application proxy: Relays application level traffic.
+
+** Cryptography for Securing Network Comm
+There a few protocols, each usually working on a different layer. We have TLS/SSL, WPA2, IPSec.
+
+When analyzing, we want to see what layer the attacker resides it to see what is protected (and not).
+However, the general guideline is that a protocol that protects layer k will protect info from that layer and above from an attacker residing at layer k-1 and below.
+
+SSL/TLS sits on top of transport layer and performs end to end encryption with a MAC for authenticity.
+
+WPA2 protects link and physical layer, though not everything at link is protected. This is often used at Home Wifi access point.
+
+IPSec provides integrity/authenticity for IP addresses but not confidentiality.
+
+* Lecture 10: Access Control
+Layers in a computer is less well defined because each layer has its own processes and data, and have to control access to it and make sure the process does not do anything funny.
+
+Access control model gives a way to specify restrictions on subjects, objects and actions.
+A subject wants to access an object with operation. The reference monitor is the one that grants or denies the access.
+Principals are the human users and subjects are the entities in the system that do the accessing (like processes).
+
+Accesses may be classified as observe, alter, and action (executing).
+
+** Access Rights
+DAC (UNIX uses this) means that the owner of the object decides the rights.
+MAC means that a system wide policy decides te rights and must be followed by anyone in the system.
+
+Access control is represented by either the access control list or access control matrix. ACL dtores the access rights to a particular object in the list.
+ACL kinda looks like a linked list. Hence, the drawback is that it is hard to get the list of objects some user has access to.
+In general, both matrix and list can get too large to manage as well.
+
+** Intermediate Control: Group & Protection Rings
+ACL specifies the rights for the following classes: user, group, others. Non owner subjects in the same group have the same access rights.
+
+Protection rings are also used. Each process is assigned a number, which means it runs in a certain ring.
+An object's number means that it is accessible in a certain ring. Lower Ring numbers means higher privilege.
+
+** Unix Access Control
+Unix treats all resources as file for simplicity.
+
+Each Unix User has a unique login name and uid, and can belong to one more more group. First group is stored in //etc/passwd/.
+The rest are stored in //etc/group/.
+Each group has a unique group name and id.
+
+Unix Principals are UIDs and Group IDs. Information of user account are stored in password file //etc/passwd/.
+Root is super user with UID 0 and has no security checks. The password file is made world readable because some info is needed by non-root processes.
+
+Unix subjects are processes with PID.
+
+Search Path attacks can be prevented by using the full absolute path.
+
+#+ATTR_ORG: :width 600
+[[file:images/cs2107_l10_1.png]]
+
+Set UID allows the process's effective user id to owner of executable file. Set GID is the same idea.
+
+If the directory has a sticky bit, then it can only be deleted only by the owner of the file.
+
+*** Controlled Invocation
+Allows an operation in super user mode instead of changing the permission bit of an executable file that targets the resource. This is done via privilege escalation, on the set-UID bit.
+
+However, this bridge must be implemented correctly, else it is a security vulnerability.
