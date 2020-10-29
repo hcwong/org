@@ -600,3 +600,96 @@ The first is the array. Array size cannot be changed, but otherwise we can do ou
 For strings, we can modify a character of the string.
 
 Hashtable behaves like a dictionary and it can automatically resize itself.
+
+** OCaml Classes (Lecture 11)
+#+BEGIN_SRC
+class counter (init parameter here)=
+  object (can explicitly name the object here also aka this)
+    val mutable x = 0
+    method inc = x <- x + 1
+end;;
+
+p = new counter;;
+p # inc ;;
+
+-- Inheritance
+class count_step init step =
+  object (this)
+  inherit counter init
+  method inc = x <- x + step
+  method print = string_of_int (s # get)
+end;;
+#+END_SRC
+All object fields are private. Private qualifiers are available to make your methods private.
+
+We can also define an anonymous class and just assign it to a variable.
+
+** Class Polymorphism
+#+BEGIN_SRC
+class 'a buffer init =
+  object
+    val mutable value: 'a = init
+    method get = value
+    method set n = value <- n
+end;;
+#+END_SRC
+
+** Class signature
+Class signature is based on the set of visible methods and two classes will be the same if their type signature is exactly the same.
+
+#+BEGIN_SRC
+class type ['a] buffer_type =
+  object
+    method get: 'a
+    method set: 'a -> unit
+end;;
+#+END_SRC
+
+** Subtyping
+Via row polymorphism
+#+BEGIN_SRC
+<get ::'b> object with one exact type polymoprphic 'b
+<get ::; ..> object with that method and potentially more
+#+END_SRC
+
+Via coercion
+#+BEGIN_SRC
+let foo3 (v) = (v:>'b buffer) # get;;
+   (*foo3 : `b #buffer -> 'b *)
+#+END_SRC
+
+Coercion will unify with any type that contains the visible methods from the buffer class.
+
+** Object cloning
+Can be done via `Oo.copy <object>`
+
+** Functional objects
+Functional objects are allowed if mutability is not allowed. In other words, the object now is immutable.
+
+** Virtual (Abstract) Classes
+#+BEGIN_SRC
+class virtual ['a] buffer init =
+  object (this)
+    val mutable value: 'a = init
+    method virtual eq : 'a buffer -> bool
+end;;
+#+END_SRC
+Virtual classes cannot be instantiated
+
+** Modules.
+Modules can be used to group types, values, functions, exceptions and other modules together
+
+ADTs allow us to hide implementation details and is supported by OCaml.
+
+*** Functor
+Functors are functions from structures to structures
+#+BEGIN_SRC
+module Buffer_P =
+  functor (Elt: PRIORITY_TYPE) ->
+    struct
+      type element = Elt.t
+      type t = (element list) ref
+end;;
+#+END_SRC
+
+Functors allow us to specialize two different modules and supports code reuse.
