@@ -513,3 +513,26 @@ If the directory has a sticky bit, then it can only be deleted only by the owner
 Allows an operation in super user mode instead of changing the permission bit of an executable file that targets the resource. This is done via privilege escalation, on the set-UID bit.
 
 However, this bridge must be implemented correctly, else it is a security vulnerability.
+
+* Lecture 11
+** Von Neumann Architecture
+Code and Data are stored together in memory -> If input data is treated as code, then we get a code-injection attack.
+** Control Flow attacks
+This attack leverages on the jump instruction to compromise process integrity. This can be done by modifying the control flow because instructions and data are just stored together in memory.
+
+However, in general, memory attacks (where victims are tricked into writing to certain memory locations) as each process can only write to a small amount of memory.
+** Attacks on Software
+*** Integer Overflow
+Integer arithmetic relies on modulo arithmetic.
+*** Data Representation Problem
+For example, string representations could be represented differently, thus leading to vulnerability.
+
+For example, null byte injection is a sample attack where there is a null byte in the host name.
+
+Another problem comes with encoding types, for example there are multiple ways of representing a character based on the encoding system used (eg ascii or utf).
+Other problems include whether to treat a number (lets say in an IP addr) as a 32 bit int or 8 bit char. This can help us bypass blacklist filters.
+*** Buffer Overflow
+Occurs when data is written beyond a buffer's boundary.
+*** Stack Smashing
+Occurs when the return address in the stack is overwritten by the stack as it appends more stack frames. But more often that not we get a segmentation fault.
+However, if shellcode is executed after the stack smashing, then we might get more problems because there is arbitrary code execution.
