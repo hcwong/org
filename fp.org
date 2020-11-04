@@ -70,3 +70,44 @@ ECMA6 introduced block scoping to be more mainstream -> blocks like loops instea
 Inner functions always have access to outer function variables. This is called lexical scoping.
 
 Variable shadowing - If the same variable is used in different scopes, the inner one shadows the outer one, as JS lookup table looks from the inner scope outwards => if cannot find, throws a reference error.
+
+#+BEGIN_SRC js
+// Global Scope
+var a = 'b'
+
+console.log(a) // gives 'b'
+console.log(window.a) // gives 'b'
+
+let c = 'd'
+console.log(c) // gives 'd'
+console.log(window.c) // gives undefined
+
+function PetShopModule(animal){
+    var publicAPI = {animalName, };
+    return publicAPI;
+
+   function animalName(name){
+       console.log(`${name} is a ${animal}`)
+   }
+}
+
+var animal = PetShopModule("Dog")
+animal.animalName("Kim")   // "Kim is a Dog"
+#+END_SRC
+
+* A Pragmatic Introduction to Category Theory
+[[https://www.youtube.com/watch?v=8XGFFMPHG0o][Talk here]]
+
+Category is a collection of objects linked by a set of arrows (not an official definition). Categories obey two rules: composition and identity.
+The composition operation is also associative, so the order does not matter.
+
+A monoid is a structure that has a set and a binary operation. It obeys two rules: the operation is associative
+and there exists an identity element. Ergo, a category with a single object is a monoid.
+
+Functors are used to map objects of one category to a target category. Note that the target category can be the same as the original category.
+
+Applicative functors allow us to apply functors to one another, combining two boxes together to create another box, if that makes sense.
+One example would be a box containing a function and a box containing a value.
+
+Monad can be seen as squashing boxes together. So if we have a box within a box, we can just make it a single box, no nested stuff.
+Every monad is also an applicative.
