@@ -536,3 +536,57 @@ Occurs when data is written beyond a buffer's boundary.
 *** Stack Smashing
 Occurs when the return address in the stack is overwritten by the stack as it appends more stack frames. But more often that not we get a segmentation fault.
 However, if shellcode is executed after the stack smashing, then we might get more problems because there is arbitrary code execution.
+*** Code Injection
+SQL injection attack
+*** Undocumented access points
+This happens when certain backdoors used for dev mode are not removed in production.
+
+** Defensive Measures
+*** Input validation
+Never trust user input. The two approaches to filtering are
+- Whitelist: This is usually used as it is more secure.
+- Blacklist
+*** Bounds checking
+Prevents buffer overflow.
+*** Type checking
+*** Memory protection
+Canaries are secret values inserted at selected memory locations at runtime. This will help us detect if there is any overflow.
+*** Memory Randomization
+Address space layout randomization is a prevention technique that helps us to decrease attack chances.
+This is because it is to the attackers' advantager when data and code is stored in the same location of memory.
+*** Code inspection
+This can be done by manual checking or automated checking. One example of automated checking is taint analysis.
+*** Testing
+White, grey and black box testing.
+
+Fuzzing is a technique that sends malformed inputs to discover vulnerabilities.
+*** Apply the principle of least privilege
+*** Patching
+However, the patch must be applied timely and at the right time, because patches may introduce downtime and bugs.
+
+* Lecture 12
+** Security Issue
+Browsers run with the same privilege as the user.
+Browsers also now store information about the user, in stuff like sessions and cookies.
+
+** Attacker as another end system
+Malicious web domain and web server.
+** Active Attacker
+One example of this is MITM and the another is one that sniffs and spoof packets.
+** URI Attacks
+*** Using characters
+Such as those that resemble others to spoof websites, like replacing l with /.
+*** Address bar spoofing
+In early browsers, webpage can overlay address bar.
+** Cookies
+Three types: session, persistent and secure (HTTPS). Same origin for cookies is only compulsory for secure cookies.
+
+Tokens must be random and sufficiently long. Also, if token is stored on browser side, the cookie should also have
+a MAC to preserve integrity.
+
+Same origin policy dictates that scripts can only access cookies if they have the same origin. Origin is defined as the combination of protocol, host name and port number.
+However, there are many exceptions to this.
+** XSS
+Usually just takes the form of running arbitrary script. However, the attack takes the form of privilege escalation, they can also see stuff like cookies.
+
+The defense usually just takes the form of sanitization.
