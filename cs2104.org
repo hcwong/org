@@ -677,7 +677,7 @@ end;;
 Virtual classes cannot be instantiated
 
 ** Modules.
-Modules can be used to group types, values, functions, exceptions and other modules together
+Modules can be used to group types, values, functions, exceptions and other modules together. Modules are also first class entity on OCaml.
 
 ADTs allow us to hide implementation details and is supported by OCaml.
 
@@ -693,3 +693,16 @@ end;;
 #+END_SRC
 
 Functors allow us to specialize two different modules and supports code reuse.
+
+* Lecture 12
+Scala.
+
+** Conciseness
+#+BEGIN_SRC scala
+class MyClass(index: Int, name: String)
+
+// This defines a class with two private attributes with the same name as the parameter
+#+END_SRC
+
+** OOP
+Every value in Scala is an object. The types and behaviour of the objects are described by classes and traits.

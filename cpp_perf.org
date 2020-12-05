@@ -45,6 +45,8 @@ public:
 }
 #+END_SRC
 
+#+RESULTS: String class with pointer to heap allocated memory
+
 
 #+BEGIN_SRC cpp
 // Using the copy constructor
@@ -87,3 +89,8 @@ Capture Groups
 // Mutable
 []() mutable -> T{} // where T is the return type
 #+END_SRC
+
+* Rule of Three (Five)
+If a class defines any of destructor, copy constructor, copy assignment operator, it should explicitly define all three (C++11 and below).
+
+Since C++11 and above adds in move semantics, we add move constructor and move assignment operator to the list as well.

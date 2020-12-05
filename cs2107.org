@@ -1,6 +1,8 @@
 #+TITLE: CS2107
 #+AUTHOR: Joshua Wong
 
+#+LATEX_HEADER: \usepackage[margin=0.5in]{geometry}
+
 * Lecture 1
 
 ** Definitions
@@ -39,12 +41,26 @@ Lastly, the ciphertext only attack. This checks whether given only the cipher te
 
 ** Classical Ciphers
 
-| Name                | Description                                     | Insecure under plain text                      | Insecure under cipher text                                                    | Remarks                                                                   |
-|---------------------+-------------------------------------------------+------------------------------------------------+-------------------------------------------------------------------------------+---------------------------------------------------------------------------|
-| Substitution Cipher | 1-1 mapping of letter to letter                 | Yes, given long enough cipher text             | Yes, frequency analysis                                                       |                                                                           |
-| Vigenere (Shift)    | Use a keyword to as key                         | Yes                                            | Yes, if we can find the length of the period, k, we can do frequency analysis | See Kasiski method                                                        |
-| Permutation         | Group into blocks of t, then permute each block | Yes                                            | Yes, check if permutation gives valid word                                    |                                                                           |
-| One Time Pad        | Using n bit key and n bit message, XOR each bit | You can, but the key is useless (one time use) | No, not clear how to exhaustive search and leaks no info apart from msg size  | Key must be as long as message and sent on secure channel so not too good |
++---------------------+-------------------+------------------+-----------------------------+-------------------------+
+| Name                | Description       | Insecure under   | Insecure under cipher text  | Remarks                 |
+|                     |                   |plain text        |                             |                         |
++---------------------+-------------------+------------------+-----------------------------+-------------------------+
+| Substitution Cipher | 1-1 mapping of    | Yes, given long  | Yes, frequency analysis     |                         |
+|                     |letter to letter   |enough cipher text|                             |                         |
++---------------------+-------------------+------------------+-----------------------------+-------------------------+
+| Vigenere (Shift)    | Use a keyword to  | Yes              |   Yes, if we can find the   | See Kasiski method      |
+|                     |as key             |                  | length of the period, k, we |                         |
+|                     |                   |                  |  can do frequency analysis  |                         |
++---------------------+-------------------+------------------+-----------------------------+-------------------------+
+| Permutation         | Group into blocks | Yes              | Yes, check if permutation   |                         |
+|                     |of t, then permute |                  |gives valid word             |                         |
+|                     |    each block     |                  |                             |                         |
++---------------------+-------------------+------------------+-----------------------------+-------------------------+
+| One Time Pad        |Using n bit key and| You can, but the |    No, not clear how to     | Key must be as long as  |
+|                     |n bit message, XOR |  key is useless  | exhaustive search and leaks |   message and sent on   |
+|                     |     each bit      |  (one time use)  | no info apart from msg size |secure channel so not too|
+|                     |                   |                  |                             |          good           |
++---------------------+-------------------+------------------+-----------------------------+-------------------------+
 
 *Kasiski method: Look for same letter blocks in the cipher text and see how far they are apart. This might gives clues about the period/keyword size of vigenere.
 
@@ -124,12 +140,12 @@ One option is to use double DES, though this can be broken by meet in the middle
 ** AES
 Block size of 128 bits and key size of 128, 192, or 256 bits. It uses a substitution and permutation network, different from Feistel. Currently secure.
 
-AES is probablistic if we use a randomly chosen IV.
+AES is probabilistic if we use a randomly chosen IV.
 
 ** Properties
 Diffusion - change in plaintext will affect many parts of the cipher text.
 
-Confusion - an attakcer should not be able to predict what happens to cipher text when one character in plaintext changes.
+Confusion - an attacker should not be able to predict what happens to cipher text when one character in plaintext changes.
 
 ** Mode of operations of Block Cipher
 *** ECB
@@ -219,7 +235,7 @@ Criteria:
 Card's magnetic strip contains the account ID, so add the card reader to read the ID and then spoof the password to get id and password.
 
 ** Biometric
-Use unique physical characteristics of a person. During enrollment, reference template of user's biometric data is constructured and stored. Then the verification, the biiometric is compared to the template using matching algorithm.
+Use unique physical characteristics of a person. During enrollment, reference template of user's biometric data is constructed and stored. Then the verification, the biometric is compared to the template using matching algorithm.
 However, this is not always 100% correct (See false match rate vs false non match rate).
 
 The threshold for FMR and FNMR can be adjusted. Other errors include failure to enroll or failure to capture (during verification).
@@ -590,3 +606,64 @@ However, there are many exceptions to this.
 Usually just takes the form of running arbitrary script. However, the attack takes the form of privilege escalation, they can also see stuff like cookies.
 
 The defense usually just takes the form of sanitization.
+
+** CSRF
+aka "sea surf" or "session riding"
+*** Mode of operation
+Client is already authenticated with a target website S which accepts authentication-token cookie.
+Attacker then tricks Client to click on a URL S in phishing email which maliciously requests for a service.
+Client's cookie then is sent to S and the action will be carried out by S.
+
+Can also take place without clicking - Client is authenticated with cookie.
+Now Mallory has web server. The web server page embeds some sort of request in a subresource like `<img>`, so when Alice visits the website;
+Alice's browser will issue the request with Alice Cookie.
+
+*** Defenses
+Integrity of the Client Request is compromised.
+Authentication-token cookie is hence not sufficient. Server must issue and require dynamic information.
+
+We add this in the form of a CSRF Token.
+
+* Definitions
+Format String Vulnerability - When the submitted data of an input string is evaluated as a command.
+
+Buffer overflow - Program puts more data in a buffer than it can hold.
+
+Integer overflow - Int is incremented to a value that cannot be stored in the associated representation.
+
+XSS - Malicious scripts are being sent to end user machines and then executed.
+
+CSRF - Forces user to execute unwanted actions on a web application in which they're currently authenticated.
+
+SQL Injection - Injection of an SQL query via the input data from the client to the application.
+
+Clickjacking - Tricks a user into clicking a webpage element that is invisible or disguised as another element.
+
+Privilege Escalation - The act of exploiting a bug/flaw in OS to gain elevated access to resources that normally cannot be accessed.
+
+Side-channel attack - Information gained from the implementation of a computer system as opposed to weaknesses in the algorithm.
+
+Covert channel - Type of attack that creates a capability to transfer info objects between processes
+that normally should not be allowed to communicate
+
+Zero-day attack - Exploit vulnerability before it is fixed.
+
+Typo squatting - Targets users that incorrectly type a website address.
+
+Click Fraud - Repeatedly clicking on website advertisements to increase site revenue.
+
+Phishing - A  that targets users by posing as a legit entity to get sensitive info.
+
+Pharming - Redirect web-site's traffic to another fake site by either changing hosts file or exploiting DNS vulnerabilities.
+
+Fuzzing - Provides unexpected data as input to a program to test if it works.
+
+Mandatory Access control - OS constrains ability of subject to access or generally perform some sort of operation on an object.
+
+Discretionary access control - Allows the user to make ability to make polo icy decisions, assign security attributes (aka UNIX)
+
+Role-based access control - Restrict system access based on the roles of users.
+
+Protection rings - Provides different layers of privilege within the architecture of a computer system.
+
+Reference monitor - Enforces access control policy over subject's ability to perform operations on a system.

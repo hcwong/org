@@ -345,3 +345,33 @@ WHERE NOT EXISTS (
   )
 )
 #+END_SRC
+
+* Lecture 7
+** Stored Functions
+#+BEGIN_SRC sql
+CREATE OR REPLACE FUNCTION
+miles_to_km (mile NUMERIC)
+RETURNS NUMERIC AS ' BEGIN RETURN mile * 1.609; END;'
+LANGUAGE plpgsql
+#+END_SRC
+
+If one step of the function fails, the whole operation will fail. Same for procedures. Function returns a value but procedure does not.
+
+** Triggers
+Triggers enable us to execute stored function on the occurrence of an event.
+
+* Lecture 9
+** Schema Decomposition
+Set of schema {R1, R2, .... , Rn} where each R_i is called fragments such that R is the union of all attributes and R_i is a subset equal of R. => aka all the fragments must be present.
+
+Each instance of R_i (called ri) can be obtained from the r of R via projection.
+
+** Useful Properties of Decomposition
+Lossless join - When we decompose into individual fragments and natural join all, we get back the original relation.
+
+Loseless Join Lemma: Basically, if no common column -> the natural join defaults into a cartesian product, so definitely no loss in information.
+
+Dependency Preserving
+#+NAME: Dependency Preserving
+#+ATTR_ORG: :width 400
+[[file:images/cs2102_l9_1.png]]
