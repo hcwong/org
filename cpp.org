@@ -1,7 +1,7 @@
 #+TITLE: Cpp
 #+AUTHOR: Joshua Wong
 
-Based on the Book "A Tour of C++ (2013)" By Stroustrup
+Based on the Book "A Tour of C++ (2013)" By Stroustrup. The syntax used is C++11
 
 * Chapter 1: Basics
 ** Immutabiity
@@ -12,9 +12,66 @@ constexpr // means that an expression will be evaluated at compiled time - to sp
 #+END_SRC
 ** For Loops
 #+BEGIN_SRC cpp
-for (auto &x: arr) // to get a reference
+for (auto& x: arr) // to get a reference
 for (auto x: {1,2,3,4})
 #+END_SRC
 
 On that note, references are similar to a pointer, but you don't need to dereference it to use the value.
 A reference also cannot be modified to refer to a different object.
+
+* Chapter 2: User Defined Types
+Structs and classes are the same.
+
+#+BEGIN_SRC cpp
+// One way of writing a constructor unlike the Java way
+Vector(int s): elem{new double[s]}, sz{s} {} // where elem is a double* and sz and int
+#+END_SRC
+
+** Union Types
+A struct where all members are allocated at the same address so that the union occupies as much space
+as its largest member.
+
+#+BEGIN_SRC cpp
+union Value {
+    char *s;
+    int i;
+};
+#+END_SRC
+
+It is up to the user to do the type checking to see which field of the union struct is used.
+
+** Enumerations
+#+BEGIN_SRC cpp
+enum class Color {red, blue, green};
+// Usage
+Color::red;
+#+END_SRC
+
+If enum values are to be ints, the 'class' keyword can be removed from 'enum class'. Then the values will be
+auto-converted to int values. So red = 0, blue = 1, and green = 2.
+
+* Chapter 3: Modularity
+** Namespaces
+Namespaces help to organize large components and prevent any name clashes.
+#+BEGIN_SRC cpp
+namespace Test {
+    int main();
+}
+
+int Test::main() {return 1;};
+#+END_SRC
+** Error Handling
+Function that should never throw an error can be declared using 'noexcept'.
+#+BEGIN_SRC cpp
+void user(int sz) noexcept {
+    //...
+}
+#+END_SRC
+
+If this function throws an error, then stdlib fn `terminate()` is called to terminate program.
+** Static assertions
+Static assertions are run at compile time on properties that are known at compile time. Failures are reported
+as compiler error messages.
+#+BEGIN_SRC
+static_assert(condition, "statement")
+#+END_SRC
