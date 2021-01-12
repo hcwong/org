@@ -1,0 +1,20 @@
+#+TITLE: Cpp
+#+AUTHOR: Joshua Wong
+
+Based on the Book "A Tour of C++ (2013)" By Stroustrup
+
+* Chapter 1: Basics
+** Immutabiity
+#+BEGIN_SRC cpp
+const // means that the value will not be changed
+constexpr // means that an expression will be evaluated at compiled time - to specify constants
+// and to place data in read only memory
+#+END_SRC
+** For Loops
+#+BEGIN_SRC cpp
+for (auto &x: arr) // to get a reference
+for (auto x: {1,2,3,4})
+#+END_SRC
+
+On that note, references are similar to a pointer, but you don't need to dereference it to use the value.
+A reference also cannot be modified to refer to a different object.
