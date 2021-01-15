@@ -1,0 +1,13 @@
+#+TITLE: CS3211
+#+AUTHOR: Joshua Wong
+
+* Lecture 1
+#+BEGIN_SRC
+owner_pos(i) =
+[condition]<event>.<parameter>{program} -> owner_pos(i)
+  []
+
+#+END_SRC
+The empty square bracket indicates a if else type of construct.
+
+The arrow is to show a series of events and indicates the workflow of the program/events

@@ -1,0 +1,71 @@
+#+TITLE: CS3223
+#+AUTHOR: Joshua Wong
+
+* Lecture 1
+** Problem with simple ASCII DBMS
+Updates and deletes are expensive - for example, if we changed string from Cat to Cats, a full rewrite is needed.
+ASCII storage is also expensive.
+
+Searching is also expensive as we have no indexes. On that note, we also don't cache results, so if the same query is made, the system will just rerun the query.
+
+Query processing is also difficult.
+
+No concurrent control.
+
+Reliability is also an issue as operations are not atomic - so if a crash occurs, the operation will be left half done.
+Backups are also hard to do.
+
+Security is also bad as the system is insecure and we don't have different level of privileges.
+
+#+NAME: DBMS Architecture
+#+ATTR_ORG: :width 300
+[[file:images/cs3223_l1_1.png]]
+
+** DBMS Store
+DBMS Stores
+1. Relations
+2. Indexes
+3. System Catalog (Relation Metadata)
+4. Log files
+
+** Memory Hierarchy
+Primary memory is where the currently used data is stored, but the main database is stored on the secondary memory.
+
+We cannot just use main memory to store everything as it is volatile and there is a larger chance of data corruption when we have a larger memory.
+There are energy efficiencies issues as well.
+
+** Data Access
+Read and write operations are high cost as the processing is done in RAM, but info is stored on secondary memory.
+Therefore, we need to read/write from the hard disks.
+
+** Disks
+#+NAME: Recap (Hard Disks)
+#+ATTR_ORG: :width 300
+[[file:images/cs3223_l1_2.png]]
+
+Same as OS memory systems, data is stored and retrieved in pages and blocks (page and block used interchangeably in this module).
+However, *DBMS manages its memory separate from OS*.
+Note that the time taken to retrieve a disk page varies according to its relative location on disk at the time of access
+- for example in HDD there is seek time (more significant) and rotational delay.
+
+Therefore, blocks in a file should be arranged sequentially on disk to minimize seek and rotational delay.
+
+** Disk Space Management (aka file system management)
+1. Bitmap
+2. Linked List
+   Link all the free blocks together in a linked list
+
+Other factors affecting allocation are granularity and allocation methods.
+
+Smaller granularity results in fragmentation, larger one results in worse space utilization.
+
+Allocation methods determine whether all the pages/blocks are close by (contiguously) or fragmented.
+
+*** Managing space allocated to files
+Consists of a header page and data pages in a heap implementation.
+
+#+NAME: Heap File Implementation
+#+ATTR_ORG: :width 300
+[[file:images/cs3223_l1_3.png]]
+
+Alternatively, in a page directory, the header page just points to every data page, and can contain the number of free bytes for each page.

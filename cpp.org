@@ -68,10 +68,16 @@ void user(int sz) noexcept {
 }
 #+END_SRC
 
-If this function throws an error, then stdlib fn `terminate()` is called to terminate program.
+If this function throws an error, then stdlib function `terminate()` is called to terminate program.
 ** Static assertions
 Static assertions are run at compile time on properties that are known at compile time. Failures are reported
 as compiler error messages.
 #+BEGIN_SRC
 static_assert(condition, "statement")
 #+END_SRC
+
+* Chapter 4: Classes
+** Concrete classes
+Representation of concrete class is part of its definition. This allows us to place concrete types on stack and refer to them directly.
+
+Functions defined in a class are inlined by default.
