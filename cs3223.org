@@ -62,10 +62,98 @@ Smaller granularity results in fragmentation, larger one results in worse space 
 Allocation methods determine whether all the pages/blocks are close by (contiguously) or fragmented.
 
 *** Managing space allocated to files
+Within the file itself, they will manage the pages allocated to it by the DBMS. To the DBMS, these pages are already "allocated".
+But from the file's point of view, they can see which ones are free and not.
+
 Consists of a header page and data pages in a heap implementation.
 
 #+NAME: Heap File Implementation
 #+ATTR_ORG: :width 300
 [[file:images/cs3223_l1_3.png]]
 
-Alternatively, in a page directory, the header page just points to every data page, and can contain the number of free bytes for each page.
+Alternatively, in a page directory, the header page just points to every data page, and can contain the number of free bytes for each page. 1 page contains 2 sectors (to check again), each sector counts as one I/O.
+
+Buffer pool is the main memory allocated for DBMS and it is partitioned into pages called frames. We maintain a table of <frame#, pageid> pairs.
+This allows for the application to check if the page has already been loaded.
+Each frame also has two values, *pin count* (user count of the page in the frame) and *dirty flag*.
+
+*** Requesting a Page
+If page is not in buffer pool and if there are no free frames available, we choose a frame for replacement. If the frame is dirty, write it to disk.
+Then, we read the requested page into the frame and increment pin count and return its address.
+If requests can be predicted, we can also pre-fetch pages.
+
+If no page can be replaced, we just delay the request.
+
+*** Replacement Policies
+1. FIFO - Good for seq access behavior.
+2. LFU - Page with high reference activity will never been flushed.
+3. LRU - Most commonly used, but this is bad when sequential flooding occurs.
+
+*** Files of Records
+High levels of DBMS operate on records and files of records.
+A file is a collection of pages, each containing a collection of records. We want to support CRUD operations
+on these records and files.
+Usually, we want the record to fit within the page.
+
+#+NAME: Record Formats.
+#+ATTR_ORG: :width 300
+[[file:images/cs3223_l2_1.png]]
+
+#+NAME: Page format
+#+ATTR_ORG: :width 300
+[[file:images/cs3223_l2_2.png]]
+Error in image above: Records cannot be shifted around within the page w/o changing the
+record id.
+
+Page formats can also be done in a variable length format. In this case, the slot directory
+contains the size of each record and the number of records being stored in the page.
+The benefit of the variable length format is that we can shift records around freely as
+all we have to do is to move the pointer reference around.
+
+* Lecture 2
+** Indexes
+Data structure on a file to speed up retrieval/selections based on some search key.
+Every relation can have multiple search keys and hence multiple indexes.
+The index is stored a as a file and records in an index file are referred to as data entries. Each record in the index
+file can be visualized as a pair of <search key, pointer to data file for relation>.
+
+We can also have multiple levels of index files to simplify queries.
+
+#+NAME: Simple index file
+#+ATTR_ORG: :width 300
+[[file:images/cs3223_l2_3.png]]
+
+** Index Types
+1. Tree based index - Based on sorting of search key values using B+ tree
+2. Hash based index - Data entries access using hashing function
+
+The criteria to evaluate index type
+are search performance (equality and range search), storage overhead and update performance.
+
+** Tree Structured Indexing
+Excellent for equality and range based searching.
+
+Every Relational DBMS uses B+ Tree.
+
+#+NAME: B+ Tree
+#+ATTR_ORG: :width 600
+[[file:images/cs3223_l2_4.png]]
+
+Key values for index entries are separators and may not correspond to any key values.
+
+#+NAME: Order
+#+ATTR_ORG: :width 600
+[[file:images/cs3223_l2_5.png]]
+
+*** Properties
+1. Height Balanced
+2. Update Efficient
+3. Minimum 50% occupancy - Storage Efficient
+4. Next leaf pointer (efficient range search)
+5. Sorted leaf nodes
+
+** Format of Data Entries
+One format is k* is an actual data record.
+
+The other is (k*, rid-list) where rid-list is a list of record identifiers of data records with search value k.
+This is like our original format, except it is slightly more space efficient.
