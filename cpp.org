@@ -163,3 +163,54 @@ This is known as Resource Allocation Is Initialization (RAII).
 ** Suppressing Operations
 If we want to delete the default copy and move operations, we can use the /=delete/ keyword at the end of the member
 function definition.
+
+* Chapter 5: Templates
+C++ templates are not the same as Java Generics. In fact they are more like Macros rather than Java Generics, which are
+only run at compile time.
+
+#+BEGIN_SRC cpp
+template<typename T>
+class Vector {
+ // ...
+};
+
+// Templates can also take in value arguments
+template<typename T, int n>
+class Something {
+    using value_type = T;
+    constexpr int size() {return N};
+    // Alias value_type and constexpr allows user to get read only access to the template arguments
+}
+#+END_SRC
+
+Templates need not only used to define classes and struct but can also be used to parameterize types and algorithms (functions).
+
+** Function Objects
+These templates are also known as functors. These objects can be called like functions.
+
+#+BEGIN_SRC cpp
+template<typename T>
+class Less_than {
+    const T val;
+public:
+    Less_than(const T &v) { val = v; };
+    bool operator()(const T &x) {return x < val};
+};
+
+Less_than<int> lti(42);
+#+END_SRC
+
+These function objects are often used as arguments to algorithms and can be included as a template value.
+A common example this is a predicate being passed as an argument.
+
+However, defining function objects is tiresome as it is usually only used once, so we usually just a lambda expression.
+#+BEGIN_SRC cpp
+[&](int a) {return a < x}; // Lambda expression for less than. [&] is a capture list.
+#+END_SRC
+
+** Variadic Templates
+Templates can be defined to accept an arbitrary number of arguments of arbitrary types.
+#+BEGIN_SRC cpp
+template<typename T, typename ...Tail>
+// Stuff below here
+#+END_SRC
