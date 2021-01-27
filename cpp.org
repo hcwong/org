@@ -214,3 +214,16 @@ Templates can be defined to accept an arbitrary number of arguments of arbitrary
 template<typename T, typename ...Tail>
 // Stuff below here
 #+END_SRC
+
+* Chapter 7: Strings and Regular Expressions
+The string object in C++ is mutable.
+
+Strings in C++ are usually stored with the *short-string optimization*. This means that short string values are kept in the string object itself,
+but long strings are placed on free store and referenced via a pointer.
+
+** Regular Expressions
+These are provided by the /<regex>/ library.
+
+Raw strings can be used to define regex patterns. Just use R"(<pattern here>)"".
+
+Regex can also be combined with iterators.
