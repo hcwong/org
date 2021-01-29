@@ -227,3 +227,7 @@ These are provided by the /<regex>/ library.
 Raw strings can be used to define regex patterns. Just use R"(<pattern here>)"".
 
 Regex can also be combined with iterators.
+
+* Chapter 8: I/O Streams
+An ostream converts typed objects to a stream of characters.
+An istream converts a stream of charaters to typed objects.

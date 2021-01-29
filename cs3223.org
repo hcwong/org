@@ -123,6 +123,9 @@ We can also have multiple levels of index files to simplify queries.
 #+ATTR_ORG: :width 300
 [[file:images/cs3223_l2_3.png]]
 
+Keeping all possible indexes may not be a very good idea as maintenance of the indexes is very expensive
+and the number of possible indexes is exponential.
+
 ** Index Types
 1. Tree based index - Based on sorting of search key values using B+ tree
 2. Hash based index - Data entries access using hashing function
@@ -157,3 +160,66 @@ One format is k* is an actual data record.
 
 The other is (k*, rid-list) where rid-list is a list of record identifiers of data records with search value k.
 This is like our original format, except it is slightly more space efficient.
+
+** Unclustered vs clustered index
+An index is a *clustered index* if the order of its data is the same as the order of the data records. This means that
+since the records are close together, the data is so, and maybe even in the same page, which has good efficiency.
+
+To build a clustered index, we first have to sort the data file, with some free space on each page for future inserts.
+Overflow pages may be needed for inserts (like linked list node chaining).
+
+** Dense Index
+There is at least one data entry (leaf) per search key value.
+Sparse indexes just means that each entry may not have one search key value in the index.
+Every sparse index is clustered and need to be sorted.
+
+** Multi-attribute indexes
+Composite search keys just mean that we are sorting based on a combination of fields.
+#+NAME: Composite
+#+ATTR_ORG: :width 300
+[[file:images/cs3223_l3_1.png]]
+
+Tip for searching: always pick the condition with a stricter requirement to aid in getting the results.
+
+* Lecture 3: Hash-based Indexes
+This is best for equality selections, but the performance degenerates for skewed data distributions
+is usually inefficient for range searches.
+
+** Static Hashing
+Data is stored in M Buckets and M is fixed at creation time.
+
+Each bucket consists of a primary data page and a chain of zero or more overflow data pages.
+Primary pages are allocated sequentially and never de-allocated.
+
+Ideally, the hash function you use should distribute the records over all the buckets to prevent overflow.
+If there are long overflows, we now might need to change the hash function and reorganize.
+
+** Dynamic Hashing
+Linear hashing is a dynamic scheme and the hash file grows linearly (one bucket at a time) by splitting the buckets.
+
+LH handles the problem of having long overflow chains. But there may still have overflow pages as the chain is
+not immediately split.
+
+Splitting a bucket is however an issue. When we obtain a new bucket B_j, we need to determine j, determine how to redistribute,
+how to modify a hash function without modifying existing records.
+
+#+NAME: Split Image
+#+ATTR_ORG: :width 300
+[[file:images/cs3223_l3_2.png]]
+
+File size doubles after all the buckets have split according to the image above (one round of splitting).
+To grow the file linearly, buckets are split sequentially. Bucket B_i must split before B_{i+1}. There is always a pointer
+that helps to keep track to the next bucket that has yet to be split. We don't double the file after every split because we have to rehash everything instead of just one bucket => a lot of performance overhead.
+
+When to split a bucket can be decided with various criteria, such as but not limited to:
+1. Split whenever bucket overflows
+2. Split when space utilization of file is above some threshold.
+
+For our course, we assume that a bucket is triggered whenever *some* bucket overflows, aka all the primary and
+overflow pages in the bucket are full.
+
+For deletion, we can only reclaim a bucket if it is empty and if it is the last block.
+
+We usually have 1 disk I/O if the bucket has no overflow pages. From testing, in LH we get an average of 1.2 disk I/O
+for uniform or lowly skewed distribution. The worst case is the I/O cost is linear with the number of entries.
+The space performance also does poorly if the data is skewed as per usual.
