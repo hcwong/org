@@ -274,7 +274,7 @@ only want a few pages, let's say top 10, from a resource consumption POV, its be
 For each query, we try to come up with an equivalent plan, and the most optimised one.
 
 #+NAME:  Schema for examples
-#+ATTR_ORG: :width 300
+#+ATTR_ORG: :width 600
 [[file:images/cs3223_l5_1.png]]
 
 ** Equality Joins with 1 Join Column ( R \(\Join\) S)
@@ -328,3 +328,35 @@ page by page and probe if we can join anything.
 The cost is as follows. In the partition phase, we read and write both relations for a cost of 2(M+N).
 In matching phase, we read both relations for M+N I/Os. However, this cost is independent of block
 size B.
+
+Recall that given B buffers, we can have B-1 partitions. We also need to make sure that the size of the
+largest partition must be <= B-2, due to us needing input and output buffer during joining phase. Hence, B must be >= \(\sqrt(M)\).
+If we do not have this, a partition may not be able to fit the necessary data.
+
+If the hash function does not partition uniformly, one or more R partitions may not fit in memory.
+To solve this, we can apply hash-join technique recursively to do the join of this R-partition
+with corresponding S-partition. If B < \(\sqrt(M)\), then we also apply the aforementioned recursive
+hash join.
+
+During the joining phase, we can also build the hash table for S (the inner table) instead
+of only doing it for R. We always want to build the hash table for the smaller table.
+This is because the table for which the hash table is built for has to fit in the memory.
+
+*** Index Nested Loop
+If have index, use index.
+
+#+BEGIN_SRC
+For each tuple in R:
+  search index of S on sid:
+    if id present:
+       join
+#+END_SRC
+
+The table with the index must be the inner table.
+
+Cost: (Pages of R) + (Tuples of R) * cost of finding S tuple.
+
+For a B+ Tree, the cost of finding S tuple is the height of the tree + 1 I/O (for clustered index) or
++ 1/O per matching S tuple (for unclustered index).
+
+For hash index, its 1.2, plus 1 for clustered and 1/O per matching S tuple for unclustered index.
