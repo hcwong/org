@@ -269,3 +269,62 @@ For clustered it means that the cost of sorting is just traversing the index tre
 Unclustered may also be useful if buffer size is small as then the performance overhead will not be very big.
 Unclustered may also save memory since we don't have to merge. Also, sorting is also a blocking operation, if we
 only want a few pages, let's say top 10, from a resource consumption POV, its better to use unclustered.
+
+* Lecture 5 - Relational Operators
+For each query, we try to come up with an equivalent plan, and the most optimised one.
+
+#+NAME:  Schema for examples
+#+ATTR_ORG: :width 300
+[[file:images/cs3223_l5_1.png]]
+
+** Equality Joins with 1 Join Column ( R \(\Join\) S)
+Join is the most frequently operation (normalization) and very costly.
+Join selectivity is given by Join Size / Size of R / Size of S. Lower join selectivity is ideal.
+
+** Join Algorithms
+Some things to consider:
+1. Type of join predicates (inequality vs equality)
+2. Size of join operands
+3. Available buffer space
+4. Available access methods
+
+*** Simple Nested Loop
+Just nested loops. The I/O cost is just |Loop 1| + (||Loop 1|| * |Loop 2|) + .... .
+The memory cost is just the number of loops + 1 result page.
+*** Page Based Nested Loop
+It is the same idea, except instead of iterating over each record, we iterate over the page instead, which reduces the number of IO we have to make.
+This can be given by |R| * |S| + |R|.
+Memory usage is the same.
+*** Block Nested Loops Join
+However, we usually have more than 3 pages of memory. We can allocate more pages to the outer loop so
+effectively,
+Now, the number of times we need to scan S is (Number of pages in outer row) / (Size of outer loop block).
+The number of times we scan R is just the outer blocks |R|.
+
+In general, we want to make the smaller table as the outer table as it will increase the performance.
+
+*** Sort Merge Join
+ We first sort R and S first on the join column and just merge on it.
+ R is scanned once. Each S partition is scanned once per matching R tuple.
+
+ The I/O Cost is the cost of sorting R and the cost of sorting S + Merging cost.
+ The cost to sort R is the same as the formula for calculating I/O during external merge:
+ 2|R| + (1 + log_{B-1}(|R|/B))
+
+ Merging cost is |R| + |S|.
+
+ Best case is if everything is sorted, worst case is if they are all duplicates,
+ which is basically just a cross product of everything.
+
+*** Hash Join (Grace Hash Join)
+The idea behind (Grace) hash join involves applying the same hash function to both tables and
+joining the diagonals.
+In other words, R tuples in partition i will only match S tuples in partition i.
+
+In general, we want to have as many partitions as possible during the join phase. During the join phase,
+we read in a partition of R and build a has table using another hash function. Then we read in S
+page by page and probe if we can join anything.
+
+The cost is as follows. In the partition phase, we read and write both relations for a cost of 2(M+N).
+In matching phase, we read both relations for M+N I/Os. However, this cost is independent of block
+size B.
