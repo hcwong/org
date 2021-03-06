@@ -1,0 +1,48 @@
+#+TITLE: Papers Read
+#+AUTHOR: Joshua Wong
+
+* Inflationary Constant Factors and Why Python is Faster Than C++ :PL:
+Author: Mehrdad Niknami (UC Berkeley)
+Date Read: 6 March 2021
+
+** Impressions
+A fairly brief paper showing how certain operations in languages, if poorly designed, could result in
+drastic performance outcomes in certain scenarios, mainly in cases of graph algorithms.
+
+** Content
+The example used was operators performing comparisons, which is used because most data structures require
+some form of partial or total ordering.
+
+Comparisons usually take 2 forms: a 2 way comparison or a 3 way comparison. 3 way comparisons can tell us
+if an object is less than or equal to another in a single call to the comparison function.
+On the other hand, a 2 way comparison function requires two calls.
+#+BEGIN_SRC
+def cmp_2way(a, b):
+    if a < b:
+       return -1
+    if b < a:
+       return 1
+    return 0
+#+END_SRC
+
+Therefore, for 2 way comparisons, more than 1 call is made. In certain situations,
+such as in a tree data structure, this extra pass/call could lead to an exponential runtime
+when performing equality checks.
+This is because taking the tree example, at every level of the tree, we are forced to do 2 comparison
+calls for each node, and each node needs to do 2 comparison calls for each of its children and so on
+and so forth.
+
+This presents interesting problems for languages like C++17 and Python3 which only require
+2 way comparison operators like ~<~ or ~__lt__~ whereas in Python2 and C++20, 3 way operators like
+~CompareTo~ and ~<=>~ are used instead.
+
+So in this situation, Python2 will perform better than C++! The author also presents more scenarios
+in which this exponential slowdown occurs, such as in hashing.
+
+** Implications and usefulness
+The implications of this study is mainly on the design of libraries. While we want to keep
+implementations relatively unconstrained for developer ease of use, the lack of restrictions might
+result in unexpected slowdowns.
+
+Malicious users may also be able to affect application runtimes using this if they are able
+to craft malicious inputs of the forms mentioned earlier, resulting in DDOS attacks.
