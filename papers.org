@@ -46,3 +46,87 @@ result in unexpected slowdowns.
 
 Malicious users may also be able to affect application runtimes using this if they are able
 to craft malicious inputs of the forms mentioned earlier, resulting in DDOS attacks.
+
+* Google File System
+[[http://static.googleusercontent.com/media/research.google.com/en/us/archive/gfs-sosp2003.pdf][Link to paper here]]
+
+** First readthrough
+*** Decisions
+**** Component Failures are the norm
+Recovery, monitoring and fault tolerance are key
+**** Files are big
+Optimize for file sizes in the GB range rather than KB range.
+Design assumptions and parameters such as block sizes have to be revisited.
+Small files must be supported but not optimized for
+**** Append is the most common operation
+Optimise for appending data at the end of files as it is the most
+common operation apart from reading.
+**** Co-designing aplpications and File System API increases system flexibility.
+*** Other assumptions
+- Workload consists of two kinds of reads: large streaming reads and smaller individual operations.
+- For smaller reads, we can batch and sort to do a one pass read of file.
+- Large sequential writes should be optimised for.
+- System must implement well defined semantics for multiple writes to same file.
+  This is so as to keep synchronization overhead minimal.
+- High bandwidth > low latency
+*** Interface
+Tree structure, with the common file operations. However, there also exist snapshot and record append.
+Snapshot copies a file/directory quickly, while record append allows for multiple clients
+to write to same file concurrently while guaranteeing atomicity.
+*** Architecture
+There is a single master (single point of failure?) and multiple chunkservers
+#+ATTR_ORG: :width 400
+[[file:images/gfs_paper_1.png]]
+
+Chunkservers store chunks of files as Linux files. Each chunk is given a unique 64 bit chunk id.
+This id is immutable and is assigned by the master. Each chunk is also replicated for reliability.
+
+Master will maintain all file system metadata. Clients interact with the master for metadata operations
+but the data bearing operations go to the chunkservers.
+
+No caching is provided, except for the linux buffer cache in the various chunkservers.
+
+Chunk size is 64MB. Internal fragmentation may be a problem but there is lazy space allocation.
+
+There are some benefits due to a large chunk size
+Clients need not interact with master that often because client can cache all the chunk info location from
+master, even for a multi TB dataset.
+Network overhead is also reduced because a lot of operations can be done on a chunk using a persistent TCP
+connection.
+
+*** Chunk locations and log
+Master does not have a persistent record of what each chunk server contains.
+It just polls them at startup and periodically, and then it stores this metadata in memory.
+
+The operation log is a record of critical metadata changes. This is the only
+persistent record of metadata and gives a logical ordering of concurrent operations.
+
+This is stored reliably and changes are not visible to client until the metadata changes
+are written to disk. The log is also replicated on multiple machines for security.
+
+Master uses the operation log to startup, so this is kept small. Once the log goes beyond a certain size,
+the master will create a checkpoint in another thread from which it can load from.
+
+*** Consistency Model
+GFS uses a relaxed consistency model.
+
+File namespaces mutations are atomic because there are handled exclusively by the master.
+Namespace locking guarantees atomicity and correctness.
+
+#+ATTR_ORG: :width 400
+[[file:images/gfs_paper_2.png]]
+
+A file region is consistent if all clients will always see the same data.
+A region is defined after a file data mutation if it is consistent and clients will
+see what the mutation writes in its entirety.
+Concurrent successful mutations leave the region undefined but consistent. this is because
+clients all see the same data but some mutations fail and make the region inconsistent and undefined.
+
+Data mutations may be writes or record append. A write causes data to be written to an
+application-specified offset while a record append causes data to be appended atomically at least once to an
+offset of GFS's choosing.
+The offset a returned to the client and marks the beginning of a defined region that contains the record.
+GFS may insert padding in between into inconsistent regions.
+
+After a sequence of successful mutations, the mutated file region is guaranteed to be defined and
+contain the data written to by last mutation.
