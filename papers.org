@@ -129,4 +129,41 @@ The offset a returned to the client and marks the beginning of a defined region 
 GFS may insert padding in between into inconsistent regions.
 
 After a sequence of successful mutations, the mutated file region is guaranteed to be defined and
-contain the data written to by last mutation.
+contain the data written to by last mutation. This is achieved by applying mutations
+to a chunk in same order on all replicas and using chunk version numbers
+to detect if any replica has gone stale.
+
+Checkpointing is also used for writing. For example, checkpoints can be used
+to check how much has been written, which allows for incremental restarts
+and for readers to figure out how much has actually been written and can be processed.
+
+*** Leases and Mutation Order
+A mutation is an operation that changes content or metadata of a chunk.
+Mutations are performed at all of a chunk's replicas. The master grants a chunk
+lease to one of the replicas called the primary. The primary then picks a serial
+order for all mutations to the chunk which all the replicas follow.
+The lease can be extended by the master if necessary.
+
+#+NAME: Write control
+#+ATTR_ORG: :width 400
+[[file:images/gfs_paper_3.png]]
+
+Note that the data flow is different from the control flow. While
+control flow flows from client to primary then to secondaries,
+data is pushed linearly along a chain of chunk servers in a pipelined fashion.
+
+Latency is minimized by pipelining the data transfer across TCP connections.
+
+*** Atomic Record Appends
+Concurrent writes to the same region are not serializable.
+
+Record append is a kind of mutation that follows the earlier control flow.
+When the client pushes last data to all the replicas, the primary will check
+if appending the record to the current chunk will cause the chunk to exceed maximal
+size. If so, retry operation at the next chunk.
+
+If record append fails at any replica, client will retry the operation. As such,
+replicas of  the same chunk may not be bytewise identical. GFS only guarantees
+that the data is written once as an atomic unit. All the data must also
+be written at the same offset on all replicas to report success. These are
+the aforementioned defined (and consistent) regions.
